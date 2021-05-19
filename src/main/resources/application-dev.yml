@@ -14,11 +14,10 @@ management:
 spring:
   kafka:
     bootstrap-servers: localhost:19092
-    template:
-      default-topic: analyticsTopic
 
-analyticsserver:
-
+analytics:
+  creation-topic: dev.analytics.cmd.create
+  deletion-topic: dev.analytics.cmd.delete
   robert_jwt_analyticspublickey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMAMa2bW7k1SQrY+MtGbGvbeBj+4JB5hzCHXe+Amzc/yLUlAabO12uUwlBUD0JetGqNSgJKRlyDLmeyChXI3P88CAwEAAQ==
 # related private key
 #  -----BEGIN RSA PRIVATE KEY-----
@@ -32,17 +31,3 @@ analyticsserver:
 #  -----END RSA PRIVATE KEY-----
 # generated with : https://travistidwell.com/jsencrypt/demo/
 
-  validation:
-    analytics:
-      information:
-        maxInfoAllowed: 20
-        maxInfoKeyLength: 64
-        maxInfoValueLength: 512
-      event:
-        maxElementAllowed: 20
-        maxNameLength: 64
-        maxDescriptionLength: 512
-      error:
-        maxElementAllowed: 20
-        maxNameLength: 64
-        maxDescriptionLength: 512

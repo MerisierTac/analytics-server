@@ -1,0 +1,25 @@
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+default:
+  cache:
+    paths:
+      - .m2/repository/
+  tags:
+    - qlf-ci.inria.fr
+
+stages:
+  - build
+
+build:
+  image: maven:3.6.3-adoptopenjdk-11
+  stage: build
+  script:
+    - mvn -B -ntp deploy
+  artifacts:
+    paths:
+      - target/analytics-server*.jar
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+
