@@ -13,7 +13,7 @@
 
     <groupId>fr.gouv.tac</groupId>
     <artifactId>analytics-server</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
 
@@ -23,8 +23,11 @@
         <commons-lang3.version>3.11</commons-lang3.version>
         <javax.inject.version>1</javax.inject.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <spring-cloud.version>2020.0.1</spring-cloud.version>
         <spring-kafka.version>2.6.6</spring-kafka.version>
+
+        <swagger-core-version>1.6.2</swagger-core-version>
     </properties>
 
 
@@ -103,6 +106,21 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Added to allow the building from intellij see https://youtrack.jetbrains.com/issue/IDEA-150621 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok-mapstruct-binding</artifactId>
+            <version>${lombok-mapstruct-binding.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Added to allow the building from intellij see https://youtrack.jetbrains.com/issue/IDEA-150621 -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -137,10 +155,53 @@
             <version>${spring-kafka.version}</version>
         </dependency>
 
+        <!--Dependencies required for openapi generated sources -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger-core-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.1</version>
+        </dependency>
+        <!-- openapi-generator-maven-plugin 5.1.0 is not compatible with more recent versions
+        see : https://github.com/springfox/springfox/issues/3760 -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>5.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/doc/openapi-analytics-v1.yaml
+                            </inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>fr.gouv.tac.analytics.server.api</apiPackage>
+                            <modelPackage>fr.gouv.tac.analytics.server.api.model</modelPackage>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <additionalModelTypeAnnotations>@lombok.Builder@lombok.AllArgsConstructor@lombok.NoArgsConstructor</additionalModelTypeAnnotations>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -159,14 +220,19 @@
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                        <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
                         <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>${lombok-mapstruct-binding.version}</version>
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>

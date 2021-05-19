@@ -13,7 +13,7 @@ effectué le dernier status, la liste des erreurs rencontrées...)
 
 Dans une première itération de cette application, la base de données mongo n'est pas utilisée.
 
-L'application repose sur une application springboot en frontal. Celle-ci traite la requête provenant du terminal de
+L'application repose sur une application springboot en frontal. Celle-ci traite les requêtes provenant du terminal de
 l'utilisateur final. Les principaux traitements effectués par cette application sont :
 
 - validation du token JWT fourni par l'application robert, à noter qu'un token ne peut être utilisé qu'une unique fois
@@ -24,6 +24,10 @@ l'utilisateur final. Les principaux traitements effectués par cette application
 
 Par la suite, le topic kafka est consommé par logstash qui repousse les analytics dans un elasticsearch. Les analytics
 sont ensuite analysés grâce à un kibana.
+
+2 principales fonctionnalités sont implémentées : 
+- la création d'analytics
+- la suppression sur demande de l'utilisateur de l'application mobile des analytiques afin de respecter la RGPD.
 
 note : le fichier source du diagramme est fourni [ici](analytics.drawio)
 
@@ -69,9 +73,9 @@ auront été stockés dans l'elasticsearch
 
 Ces différents services sont disponibles dans un environnement docker lançable par :
 
-    docker-compose -f ../environment-setup/dev/compose/docker-compose-analytics-server.yaml up -d
+    docker-compose -f docker-compose.yaml up -d
 
-Les services dockerisés ne sont utilisés que pour pouvoir lancer l'application par elle-même. Les tests untaires
+Les services dockerisés ne sont utilisés que pour pouvoir lancer l'application par elle-même. Les tests unitaires
 utilisent des services embarqués (embedded mongodb et kafka).
 
 ## Appel rest

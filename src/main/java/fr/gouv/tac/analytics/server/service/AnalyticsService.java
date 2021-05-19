@@ -1,31 +1,54 @@
 package fr.gouv.tac.analytics.server.service;
 
-import javax.inject.Inject;
+import java.time.Instant;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import fr.gouv.tac.analytics.server.model.kafka.Analytics;
+import fr.gouv.tac.analytics.server.model.kafka.AnalyticsDeletion;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Inject))
+@RequiredArgsConstructor
 public class AnalyticsService {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Analytics> creationKafkaTemplate;
 
-    public void createAnalytics(final String analyticsAsJson) {
-        kafkaTemplate.sendDefault(analyticsAsJson).addCallback(new ListenableFutureCallback<>() {
+    private final KafkaTemplate<String, AnalyticsDeletion> deletionKafkaTemplate;
+
+    public void createAnalytics(final Analytics analytics) {
+        creationKafkaTemplate.sendDefault(analytics).addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onFailure(final Throwable throwable) {
-                log.warn("Error sending message to kafka", throwable);
+                log.warn("Analytics creation - error sending message to kafka", throwable);
             }
 
             @Override
-            public void onSuccess(final SendResult<String, String> sendResult) {
+            public void onSuccess(final SendResult<String, Analytics> sendResult) {
+                log.debug("Message successfully sent {}", sendResult);
+            }
+        });
+    }
+
+    public void deleteAnalytics(final String installationUuid) {
+        AnalyticsDeletion analyticsDeletion = AnalyticsDeletion.builder()
+                .installationUuid(installationUuid)
+                .deletionTimeStamp(Instant.now())
+                .build();
+
+        deletionKafkaTemplate.sendDefault(analyticsDeletion).addCallback(new ListenableFutureCallback<>() {
+            @Override
+            public void onFailure(final Throwable throwable) {
+                log.warn("Analytics deletion - error sending message to kafka", throwable);
+            }
+
+            @Override
+            public void onSuccess(final SendResult<String, AnalyticsDeletion> sendResult) {
                 log.debug("Message successfully sent {}", sendResult);
             }
         });

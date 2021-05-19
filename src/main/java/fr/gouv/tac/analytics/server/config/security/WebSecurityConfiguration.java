@@ -11,7 +11,7 @@ import java.util.Base64;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,26 +24,27 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
 import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.DelegatingOAuth2JwtTokenValidator;
 import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.ExpirationTokenPresenceOAuth2TokenValidator;
 import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.JtiPresenceOAuth2TokenValidator;
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String RSA_ALGORITHM = "RSA";
 
-    @Autowired
-    private HandlerExceptionResolver handlerExceptionResolver;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
-    @Value("${analyticsserver.robert_jwt_analyticspublickey}")
-    private String robertJwtPublicKeyString;
+    private final AnalyticsProperties analyticsProperties;
 
     private RSAPublicKey robertRSAPublicKey;
 
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        final byte[] robertJwtPublicKeyBytes = Base64.getDecoder().decode(robertJwtPublicKeyString.getBytes(StandardCharsets.UTF_8));
+        final byte[] robertJwtPublicKeyBytes = Base64.getDecoder().decode(analyticsProperties.getRobertJwtAnalyticsPublicKey().getBytes(StandardCharsets.UTF_8));
         final X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(robertJwtPublicKeyBytes, RSA_ALGORITHM);
         final KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM);
         robertRSAPublicKey = (RSAPublicKey) kf.generatePublic(X509publicKey);
@@ -56,7 +57,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
-                .antMatchers("/actuator/**").permitAll()
+                .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
                 .anyRequest().authenticated()
                 .and().oauth2ResourceServer(oauth2 -> oauth2.jwt().and().authenticationEntryPoint(authenticationEntryPoint()))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
