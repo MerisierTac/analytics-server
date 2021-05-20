@@ -1,13 +1,5 @@
 package fr.gouv.tac.analytics.server.it;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import org.springframework.util.Base64Utils;
-
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -16,13 +8,22 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import org.springframework.util.Base64Utils;
+
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+
 public class JwtTokenHelper {
 
     private final RSASSASigner rsassaSigner;
+
     private final JWTClaimsSet.Builder builder;
 
     public JwtTokenHelper(final String rsaPrivateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
-
         final byte[] privateKeyAsByteArray = Base64Utils.decodeFromString(rsaPrivateKey);
 
         final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyAsByteArray);
@@ -51,7 +52,6 @@ public class JwtTokenHelper {
     }
 
     public String generateToken() throws JOSEException {
-
         final JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256).build();
         final JWTClaimsSet body = this.builder.build();
 
@@ -63,5 +63,4 @@ public class JwtTokenHelper {
     public String generateAuthorizationHeader() throws JOSEException {
         return "Bearer " + generateToken();
     }
-
 }

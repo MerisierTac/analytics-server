@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+
+import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
 
 @Slf4j
 @RestControllerAdvice
@@ -38,16 +39,15 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers,
+            HttpStatus status, WebRequest request) {
         return errorVoBuilder(ex, status);
     }
 
     private ResponseEntity<Object> errorVoBuilder(final Exception e, final HttpStatus httpStatus) {
         final ErrorResponse errorResponse = new ErrorResponse();
-                errorResponse.setMessage(e.getMessage());
-                errorResponse.setTimestamp(OffsetDateTime.now());
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setTimestamp(OffsetDateTime.now());
         return ResponseEntity.status(httpStatus).body(errorResponse);
     }
-
 }

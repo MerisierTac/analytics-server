@@ -20,7 +20,6 @@ public class JtiPresenceOAuth2TokenValidatorTest {
 
     @Test
     public void shouldFailIfNoJtiInTheToken() {
-
         Mockito.when(token.getId()).thenReturn(null);
 
         final OAuth2TokenValidatorResult result = jtiPresenceOAuth2TokenValidator.validate(token);
@@ -28,14 +27,15 @@ public class JtiPresenceOAuth2TokenValidatorTest {
         Assertions.assertThat(result.hasErrors()).isTrue();
         Assertions.assertThat(result.getErrors()).hasSize(1);
         final OAuth2Error oAuth2ErrorResult = result.getErrors().iterator().next();
-        Assertions.assertThat(oAuth2ErrorResult.getErrorCode()).isEqualTo(JtiPresenceOAuth2TokenValidator.JTI_NOT_FOUND_OAUTH2ERROR.getErrorCode());
-        Assertions.assertThat(oAuth2ErrorResult.getDescription()).isEqualTo(JtiPresenceOAuth2TokenValidator.JTI_NOT_FOUND_OAUTH2ERROR.getDescription());
+        Assertions.assertThat(oAuth2ErrorResult.getErrorCode())
+                .isEqualTo(JtiPresenceOAuth2TokenValidator.JTI_NOT_FOUND_OAUTH2ERROR.getErrorCode());
+        Assertions.assertThat(oAuth2ErrorResult.getDescription())
+                .isEqualTo(JtiPresenceOAuth2TokenValidator.JTI_NOT_FOUND_OAUTH2ERROR.getDescription());
         Assertions.assertThat(oAuth2ErrorResult.getUri()).isNull();
     }
 
     @Test
     public void shouldNotFailIfJtiIsPresent() {
-
         final String jti = "someId";
         Mockito.when(token.getId()).thenReturn(jti);
 
@@ -43,5 +43,4 @@ public class JtiPresenceOAuth2TokenValidatorTest {
 
         Assertions.assertThat(result.hasErrors()).isFalse();
     }
-
 }

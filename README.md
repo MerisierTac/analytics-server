@@ -25,7 +25,8 @@ l'utilisateur final. Les principaux traitements effectués par cette application
 Par la suite, le topic kafka est consommé par logstash qui repousse les analytics dans un elasticsearch. Les analytics
 sont ensuite analysés grâce à un kibana.
 
-2 principales fonctionnalités sont implémentées : 
+2 principales fonctionnalités sont implémentées :
+
 - la création d'analytics
 - la suppression sur demande de l'utilisateur de l'application mobile des analytiques afin de respecter la RGPD.
 
@@ -37,6 +38,7 @@ le contrat d'interface du service rest exposé est disponible au format
 openapi [openapi-analytics.yaml](src/main/doc/openapi-analytics.yaml)
 
 ## Configuration Kafka SSL
+
 Ce chapitre explique comment configurer une connexion sécurisée SSL entre le producteur de message (notre application) et le server kafka.
 
 Il faut générer un certificat pour le server Kafka (avec CN = hostname). Ce certificat est stocké dans un truststore (au format jks) et protégé par un mot de passe.
@@ -48,10 +50,12 @@ openssl pkcs12 -inkey node-1.pem -in node-1.pem -name node-1 -export -out node-1
 keytool -importkeystore -deststorepass changeme \
     -destkeystore node-1-keystore.jks -srckeystore node-1.p12 -srcstoretype PKCS12
 ```
+
 Le trustore doit être installé sur le system de fichier des serveurs hébergeant l'application analytics.
 
 La configuration SSL est sauvegardée dans Vault et injectée à l'application via spring-cloud-vault-config-consul in apps.
 Voici les propriétés devant être utilisées :
+
 - `spring.kafka.bootstrap-servers` doit être initialisé avec la liste des hostname:port des serveurs kafka (il faut indiquer le même nom que le `CN` du certificat)
 - `spring.kafka.properties.security.protocol` égal à `ssl` pour activer le SSL
 - `spring.kafka.ssl.trust-store-location` suivant le nommage suivant `file:///path/to/kafka.client.truststore.jks` (ne pas oublier le préfixe `file://` pour une URL valide)
@@ -97,7 +101,7 @@ Pour cela il est possible d'utiliser https://jwt.io
 
 Il faut sélectionner l'algorithm RS-256
 
-La clef publique est récupérable au niveau de la clef `robert_jwt_analyticspublickey` dans le fichier application-dev.yml 
+La clef publique est récupérable au niveau de la clef `robert_jwt_analyticspublickey` dans le fichier application-dev.yml
 en le formattant de la façon suivante avant de la copier dans le champ prévu à cet effet sous jwt.io
 
       -----BEGIN PUBLIC KEY-----
@@ -115,6 +119,7 @@ Il faut la formatter de la façon suivante avant de la copier dans le champ pré
       <...>
     -----END RSA PRIVATE KEY----
 
-Il vous est alors possible de : 
-* modifier le payload pour générer un nouveau token
-* lire le contenu d'un token
+Il vous est alors possible de :
+
+- modifier le payload pour générer un nouveau token
+- lire le contenu d'un token

@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 public class ExpirationTokenPresenceOAuth2TokenValidator implements OAuth2TokenValidator<Jwt> {
 
     public static final String ERR_MESSAGE = "The token expiration (exp) is missing";
+
     static final OAuth2Error EXPIRATION_NOT_FOUND_OAUTH2ERROR = new OAuth2Error("invalid_token", ERR_MESSAGE, null);
 
-    private static final OAuth2TokenValidatorResult FAILURE_RESULT = OAuth2TokenValidatorResult.failure(EXPIRATION_NOT_FOUND_OAUTH2ERROR);
-    private static final OAuth2TokenValidatorResult SUCCESS_RESULT = OAuth2TokenValidatorResult.success();
+    private static final OAuth2TokenValidatorResult FAILURE_RESULT = OAuth2TokenValidatorResult
+            .failure(EXPIRATION_NOT_FOUND_OAUTH2ERROR);
 
+    private static final OAuth2TokenValidatorResult SUCCESS_RESULT = OAuth2TokenValidatorResult.success();
 
     @Override
     public OAuth2TokenValidatorResult validate(final Jwt jwt) {

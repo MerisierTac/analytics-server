@@ -34,7 +34,6 @@ public class DelegatingOAuth2JwtTokenValidatorTest {
 
     @Test
     public void shouldCallEachValidatorIfNoError() {
-
         Mockito.when(validator1.validate(token)).thenReturn(OAuth2TokenValidatorResult.success());
         Mockito.when(validator2.validate(token)).thenReturn(OAuth2TokenValidatorResult.success());
 
@@ -50,8 +49,8 @@ public class DelegatingOAuth2JwtTokenValidatorTest {
 
     @Test
     public void shouldStopValidationWhenAnErrorIsEncountered() {
-
-        final OAuth2TokenValidatorResult failure = OAuth2TokenValidatorResult.failure(new OAuth2Error("errorCode", "error message", "some uri"));
+        final OAuth2TokenValidatorResult failure = OAuth2TokenValidatorResult
+                .failure(new OAuth2Error("errorCode", "error message", "some uri"));
 
         Mockito.when(validator1.validate(token)).thenReturn(failure);
 
@@ -62,5 +61,4 @@ public class DelegatingOAuth2JwtTokenValidatorTest {
 
         Mockito.verify(validator2, Mockito.never()).validate(token);
     }
-
 }

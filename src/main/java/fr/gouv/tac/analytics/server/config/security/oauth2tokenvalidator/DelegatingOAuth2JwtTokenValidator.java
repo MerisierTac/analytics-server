@@ -25,12 +25,10 @@ public class DelegatingOAuth2JwtTokenValidator implements OAuth2TokenValidator<J
         final Collection<OAuth2Error> errors = new ArrayList<>();
 
         final Iterator<OAuth2TokenValidator<Jwt>> oAuth2TokenValidatorIterator = oAuth2TokenValidators.iterator();
-
         while (oAuth2TokenValidatorIterator.hasNext() && errors.isEmpty()) {
             final OAuth2TokenValidator<Jwt> oAuth2TokenValidator = oAuth2TokenValidatorIterator.next();
             errors.addAll(oAuth2TokenValidator.validate(token).getErrors());
         }
-
         return OAuth2TokenValidatorResult.failure(errors);
     }
 }
