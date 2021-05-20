@@ -73,7 +73,7 @@ auront été stockés dans l'elasticsearch
 
 Ces différents services sont disponibles dans un environnement docker lançable par :
 
-    docker-compose -f docker-compose.yaml up -d
+    docker-compose up -d
 
 Les services dockerisés ne sont utilisés que pour pouvoir lancer l'application par elle-même. Les tests unitaires
 utilisent des services embarqués (embedded mongodb et kafka).
