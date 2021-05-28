@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -151,6 +153,21 @@ public class AnalyticsCreationValidationTest {
                 .andReturn();
 
         checkResult(mvcResult, "[Field error in object 'analyticsRequest' on field 'events[0].timestamp': rejected value [null]", OffsetDateTime.now(ZoneId.of("UTC")) );
+    }
+
+    @Test
+    @WithMockUser
+    public void itShouldRejectAnalyticsWithBadFormattedEventTimeStamp() throws Exception {
+
+        final String analyticsJsonWithBadFormattedEventTimeStamp = Files.readString(Paths.get("src/test/resources/it/analyticsJsonWithBadFormattedEventTimeStamp.json"));
+
+        final MvcResult mvcResult = mockMvc.perform(post("/api/v1/analytics")
+                .contentType(APPLICATION_JSON)
+                .content(analyticsJsonWithBadFormattedEventTimeStamp))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        checkResult(mvcResult, "JSON parse error: Cannot deserialize value of type `java.time.OffsetDateTime`", OffsetDateTime.now(ZoneId.of("UTC")) );
     }
 
     /****************
