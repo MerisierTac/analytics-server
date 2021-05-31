@@ -1,0 +1,9 @@
+{
+  "installationUuid": "123456-21546-cd254212-7e5454df",
+  "events": [
+    {
+      "name": "event1",
+      "timestamp": "2021-05-28T11:42:11.120 AMZ",
+      "desc": "my event description"
+    }]
+}

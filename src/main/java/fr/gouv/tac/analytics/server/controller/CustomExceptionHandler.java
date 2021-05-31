@@ -4,48 +4,46 @@ import java.time.OffsetDateTime;
 
 import javax.validation.ConstraintViolationException;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
-public class CustomExceptionHandler {
+public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> exception(final AuthenticationException e) {
+    public ResponseEntity<Object> exception(final AuthenticationException e) {
         return errorVoBuilder(e, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> exception(final MethodArgumentNotValidException e) {
-        return errorVoBuilder(e, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> exception(final MissingServletRequestParameterException e) {
-        return errorVoBuilder(e, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(value = ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> exception(final ConstraintViolationException e) {
+    public ResponseEntity<Object> exception(final ConstraintViolationException e) {
         return errorVoBuilder(e, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ErrorResponse> exception(final Exception e) {
+    public ResponseEntity<Object> exception(final Exception e) {
         log.warn("Unexpected error :", e);
         return errorVoBuilder(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<ErrorResponse> errorVoBuilder(final Exception e, final HttpStatus httpStatus) {
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        return errorVoBuilder(ex, status);
+    }
+
+    private ResponseEntity<Object> errorVoBuilder(final Exception e, final HttpStatus httpStatus) {
         final ErrorResponse errorResponse = new ErrorResponse();
                 errorResponse.setMessage(e.getMessage());
                 errorResponse.setTimestamp(OffsetDateTime.now());
