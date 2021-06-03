@@ -2,20 +2,20 @@ package fr.gouv.tac.analytics.server.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.gouv.tac.analytics.server.api.AnalyticsApi;
-import fr.gouv.tac.analytics.server.controller.mapper.AnalyticsMapper;
 import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
 import fr.gouv.tac.analytics.server.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
+import java.util.UUID;
 
 
 @Controller
-@RequestMapping(path="/api/v1")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Slf4j
 public class AnalyticsController implements AnalyticsApi {
 
     private final AnalyticsService analyticsService;
@@ -28,10 +28,8 @@ public class AnalyticsController implements AnalyticsApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteAnalytics(String installationUuid) {
-        log.info("Analytics deletion order has been received from mobile application : {}", installationUuid);
+    public ResponseEntity<Void> deleteAnalytics(UUID installationUuid) {
         analyticsService.deleteAnalytics(installationUuid);
         return ResponseEntity.noContent().build();
     }
-
 }

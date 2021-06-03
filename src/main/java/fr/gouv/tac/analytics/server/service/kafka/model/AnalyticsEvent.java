@@ -1,11 +1,13 @@
-package fr.gouv.tac.analytics.server.model.kafka;
+package fr.gouv.tac.analytics.server.service.kafka.model;
 
 import java.time.OffsetDateTime;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
 @Value
+@AllArgsConstructor
 @Builder
 public class AnalyticsEvent {
 
