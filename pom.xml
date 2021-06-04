@@ -383,4 +383,34 @@
         <url>https://gitlab.inria.fr/stopcovid19/analytics-server</url>
     </scm>
 
+    <profiles>
+        <profile>
+            <id>spotless-windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.diffplug.spotless</groupId>
+                        <artifactId>spotless-maven-plugin</artifactId>
+                        <configuration>
+                            <formats>
+                                <format>
+                                    <prettier>
+                                        <npmExecutable>
+                                            ${basedir}/target/node/npm.cmd
+                                        </npmExecutable>
+                                    </prettier>
+                                </format>
+                            </formats>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
