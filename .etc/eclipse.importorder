@@ -1,9 +1,6 @@
 #Organize Import Order
-#Thu May 20 15:06:26 CEST 2021
-0=java
+#Tue Jun 08 16:57:09 CEST 2021
+0=
 1=javax
-2=org
-3=com
-4=
-5=fr.gouv
-6=\#
+2=java
+3=\#

@@ -198,24 +198,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.12.0</version>
-                <configuration>
-                    <nodeVersion>v14.17.0</nodeVersion>
-                    <installDirectory>target</installDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>install-node</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.11.1</version>
@@ -229,42 +211,7 @@
                             <file>.etc/eclipse-formatter-java.xml</file>
                         </eclipse>
                     </java>
-                    <formats>
-                        <format>
-                            <includes>
-                                <include>**/*.json</include>
-                                <include>**/*.xml</include>
-                                <include>**/*.yml</include>
-                                <include>**/*.md</include>
-                            </includes>
-                            <excludes>
-                                <exclude>target/**</exclude>
-                            </excludes>
-                            <prettier>
-                                <npmExecutable>
-                                    ${basedir}/target/node/npm
-                                </npmExecutable>
-                                <devDependencyProperties>
-                                    <property>
-                                        <name>prettier</name>
-                                        <version>2.3.0</version>
-                                    </property>
-                                    <property>
-                                        <name>@prettier/plugin-xml</name>
-                                    </property>
-                                </devDependencyProperties>
-                            </prettier>
-                        </format>
-                    </formats>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>apply</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -382,35 +329,5 @@
     <scm>
         <url>https://gitlab.inria.fr/stopcovid19/analytics-server</url>
     </scm>
-
-    <profiles>
-        <profile>
-            <id>spotless-windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.diffplug.spotless</groupId>
-                        <artifactId>spotless-maven-plugin</artifactId>
-                        <configuration>
-                            <formats>
-                                <format>
-                                    <prettier>
-                                        <npmExecutable>
-                                            ${basedir}/target/node/npm.cmd
-                                        </npmExecutable>
-                                    </prettier>
-                                </format>
-                            </formats>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

@@ -51,7 +51,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.indentation.size"
-      value="8"
+      value="4"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.parentheses_positions_in_enum_constant_declaration"
@@ -71,7 +71,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.number_of_blank_lines_before_code_block"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.insert_space_before_comma_in_switch_case_expressions"
@@ -227,7 +227,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.number_of_blank_lines_at_beginning_of_method_body"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.keep_else_statement_on_same_line"
@@ -279,7 +279,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.number_of_blank_lines_at_end_of_code_block"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.insert_space_before_bitwise_operator"
@@ -391,7 +391,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration"
-      value="-2"
+      value="1"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.insert_new_line_before_closing_brace_in_array_initializer"
@@ -499,7 +499,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.blank_lines_before_field"
-      value="-2"
+      value="1"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.insert_space_after_at_in_annotation"
@@ -879,7 +879,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.number_of_blank_lines_at_end_of_method_body"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.parentheses_positions_in_if_while_statement"
@@ -1127,7 +1127,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.number_of_blank_lines_after_code_block"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_type_declaration"
@@ -1403,7 +1403,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.blank_lines_after_last_class_body_declaration"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.indent_statements_compare_to_body"
@@ -1419,7 +1419,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.blank_lines_between_statement_group_in_switch"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.insert_space_before_closing_bracket_in_array_reference"
@@ -1467,7 +1467,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.blank_lines_before_package"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_for"
@@ -1515,7 +1515,7 @@
     />
         <setting
       id="org.eclipse.jdt.core.formatter.number_of_blank_lines_at_beginning_of_code_block"
-      value="-1"
+      value="0"
     />
         <setting
       id="org.eclipse.jdt.core.formatter.insert_new_line_before_finally_in_try_statement"
