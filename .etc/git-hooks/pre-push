@@ -23,21 +23,6 @@ Jujube Orange <13631-x-JOrang@users.noreply.gitlab.inria.fr>
 Kiwi Orange <13476-x-KOrang@users.noreply.gitlab.inria.fr>
 "
 
-check_allowed_or_die() {
-  local format=$1
-  local range=$2
-  local local_ref=$3
-  while read -r user
-  do
-    local allowed_user=$(grep "^$user$" <<<$ALLOW_LIST)
-    if test ! -n "$allowed_user"
-    then
-      echo >&2 "'$user' is not allowed in $local_ref, not pushing"
-      exit 1
-    fi
-  done <<<$(git log --format="format:$format" $range | sort | uniq)
-}
-
 remote="$1"
 url="$2"
 
