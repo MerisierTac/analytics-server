@@ -1,17 +1,15 @@
 package fr.gouv.tac.analytics.server.service;
 
-import java.time.Instant;
-
+import fr.gouv.tac.analytics.server.model.kafka.Analytics;
+import fr.gouv.tac.analytics.server.model.kafka.AnalyticsDeletion;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import fr.gouv.tac.analytics.server.model.kafka.Analytics;
-import fr.gouv.tac.analytics.server.model.kafka.AnalyticsDeletion;
+import java.time.Instant;
 
 @Slf4j
 @Service

@@ -1,9 +1,8 @@
 package fr.gouv.tac.analytics.server.controller.mapper;
 
-import org.mapstruct.Mapper;
-
 import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
 import fr.gouv.tac.analytics.server.model.kafka.Analytics;
+import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = TimestampedEventMapper.class)
 public interface AnalyticsMapper {

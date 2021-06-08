@@ -1,9 +1,7 @@
 package fr.gouv.tac.analytics.server.controller;
 
-import java.time.OffsetDateTime;
-
-import javax.validation.ConstraintViolationException;
-
+import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.validation.ConstraintViolationException;
 
-import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
+import java.time.OffsetDateTime;
 
 @Slf4j
 @RestControllerAdvice

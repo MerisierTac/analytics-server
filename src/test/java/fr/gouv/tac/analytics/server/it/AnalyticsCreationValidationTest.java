@@ -1,13 +1,11 @@
 package fr.gouv.tac.analytics.server.it;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
+import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
+import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
+import fr.gouv.tac.analytics.server.api.model.TimestampedEvent;
+import fr.gouv.tac.analytics.server.model.kafka.Analytics;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +20,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
-import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
-import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
-import fr.gouv.tac.analytics.server.api.model.TimestampedEvent;
-import fr.gouv.tac.analytics.server.model.kafka.Analytics;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.emptyString;

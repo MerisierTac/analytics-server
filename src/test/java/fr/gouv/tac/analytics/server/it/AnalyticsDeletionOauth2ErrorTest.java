@@ -1,12 +1,11 @@
 package fr.gouv.tac.analytics.server.it;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.UUID;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
+import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
+import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.ExpirationTokenPresenceOAuth2TokenValidator;
+import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.JtiPresenceOAuth2TokenValidator;
+import fr.gouv.tac.analytics.server.model.kafka.AnalyticsDeletion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -22,13 +21,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
-import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
-import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.ExpirationTokenPresenceOAuth2TokenValidator;
-import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.JtiPresenceOAuth2TokenValidator;
-import fr.gouv.tac.analytics.server.model.kafka.AnalyticsDeletion;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

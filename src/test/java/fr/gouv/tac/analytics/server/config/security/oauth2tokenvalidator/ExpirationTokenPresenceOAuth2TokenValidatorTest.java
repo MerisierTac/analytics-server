@@ -1,7 +1,5 @@
 package fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator;
 
-import java.time.Instant;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +9,8 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.Instant;
 
 @ExtendWith(SpringExtension.class)
 public class ExpirationTokenPresenceOAuth2TokenValidatorTest {

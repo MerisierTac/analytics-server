@@ -1,9 +1,9 @@
 package fr.gouv.tac.analytics.server.model.kafka;
 
-import java.time.OffsetDateTime;
-
 import lombok.Builder;
 import lombok.Value;
+
+import java.time.OffsetDateTime;
 
 @Value
 @Builder

@@ -1,12 +1,12 @@
 package fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator;
 
-import java.util.Objects;
-
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class ExpirationTokenPresenceOAuth2TokenValidator implements OAuth2TokenValidator<Jwt> {

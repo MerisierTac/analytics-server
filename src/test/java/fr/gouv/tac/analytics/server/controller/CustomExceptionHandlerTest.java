@@ -1,9 +1,6 @@
 package fr.gouv.tac.analytics.server.controller;
 
-import java.time.ZonedDateTime;
-
-import javax.validation.ConstraintViolationException;
-
+import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +13,9 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
+import javax.validation.ConstraintViolationException;
+
+import java.time.ZonedDateTime;
 
 @ExtendWith(SpringExtension.class)
 public class CustomExceptionHandlerTest {
@@ -54,11 +53,12 @@ public class CustomExceptionHandlerTest {
         checkResult(result, HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), ZonedDateTime.now());
     }
 
-    private void checkResult(ResponseEntity<ErrorResponse> responseToCheck, HttpStatus expectedStatus,
-            String expectedMessage, ZonedDateTime expectedTimestamp) {
+    private void checkResult(ResponseEntity<Object> responseToCheck, HttpStatus expectedStatus, String expectedMessage,
+            ZonedDateTime expectedTimestamp) {
+        ErrorResponse errorResponse = (ErrorResponse) responseToCheck.getBody();
         Assertions.assertThat(responseToCheck.getStatusCode()).isEqualTo(expectedStatus);
-        Assertions.assertThat(responseToCheck.getBody().getMessage()).isEqualTo(expectedMessage);
-        Assertions.assertThat(responseToCheck.getBody().getTimestamp().toZonedDateTime())
+        Assertions.assertThat(errorResponse.getMessage()).isEqualTo(expectedMessage);
+        Assertions.assertThat(errorResponse.getTimestamp().toZonedDateTime())
                 .isEqualToIgnoringSeconds(expectedTimestamp);
     }
 }

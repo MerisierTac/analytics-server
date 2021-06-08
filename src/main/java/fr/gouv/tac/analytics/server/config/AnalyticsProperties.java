@@ -1,12 +1,11 @@
 package fr.gouv.tac.analytics.server.config;
 
-import javax.validation.constraints.NotEmpty;
-
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import lombok.Data;
+import javax.validation.constraints.NotEmpty;
 
 @Component
 @ConfigurationProperties(prefix = "analytics")

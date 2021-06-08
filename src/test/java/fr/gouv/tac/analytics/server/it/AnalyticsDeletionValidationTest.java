@@ -1,9 +1,9 @@
 package fr.gouv.tac.analytics.server.it;
 
-import java.io.UnsupportedEncodingException;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
+import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
+import fr.gouv.tac.analytics.server.model.kafka.AnalyticsDeletion;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
-import fr.gouv.tac.analytics.server.api.model.ErrorResponse;
-import fr.gouv.tac.analytics.server.model.kafka.AnalyticsDeletion;
+import java.io.UnsupportedEncodingException;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

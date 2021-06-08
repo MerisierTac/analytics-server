@@ -1,13 +1,10 @@
 package fr.gouv.tac.analytics.server.it;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
+import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
+import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
+import fr.gouv.tac.analytics.server.model.kafka.Analytics;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,12 +26,13 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
-import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
-import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
-import fr.gouv.tac.analytics.server.model.kafka.Analytics;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;

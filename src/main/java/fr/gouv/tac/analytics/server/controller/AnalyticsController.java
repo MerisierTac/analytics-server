@@ -1,16 +1,14 @@
 package fr.gouv.tac.analytics.server.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import fr.gouv.tac.analytics.server.api.AnalyticsApi;
 import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
 import fr.gouv.tac.analytics.server.controller.mapper.AnalyticsMapper;
 import fr.gouv.tac.analytics.server.service.AnalyticsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(path = "/api/v1")

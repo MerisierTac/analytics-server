@@ -1,15 +1,10 @@
 package fr.gouv.tac.analytics.server.config.security;
 
-import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-
-import javax.annotation.PostConstruct;
-
+import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
+import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.DelegatingOAuth2JwtTokenValidator;
+import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.ExpirationTokenPresenceOAuth2TokenValidator;
+import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.JtiPresenceOAuth2TokenValidator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,12 +18,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import lombok.RequiredArgsConstructor;
+import javax.annotation.PostConstruct;
 
-import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
-import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.DelegatingOAuth2JwtTokenValidator;
-import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.ExpirationTokenPresenceOAuth2TokenValidator;
-import fr.gouv.tac.analytics.server.config.security.oauth2tokenvalidator.JtiPresenceOAuth2TokenValidator;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 @EnableWebSecurity
 @RequiredArgsConstructor

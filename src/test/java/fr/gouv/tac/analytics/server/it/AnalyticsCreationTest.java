@@ -1,13 +1,13 @@
 package fr.gouv.tac.analytics.server.it;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
+import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
+import fr.gouv.tac.analytics.server.api.model.TimestampedEvent;
+import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
+import fr.gouv.tac.analytics.server.model.kafka.Analytics;
+import fr.gouv.tac.analytics.server.model.kafka.AnalyticsEvent;
+import fr.gouv.tac.analytics.server.utils.TestUtils;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,15 +29,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fr.gouv.tac.analytics.server.AnalyticsServerApplication;
-import fr.gouv.tac.analytics.server.api.model.AnalyticsRequest;
-import fr.gouv.tac.analytics.server.api.model.TimestampedEvent;
-import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
-import fr.gouv.tac.analytics.server.model.kafka.Analytics;
-import fr.gouv.tac.analytics.server.model.kafka.AnalyticsEvent;
-import fr.gouv.tac.analytics.server.utils.TestUtils;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
