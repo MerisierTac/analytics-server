@@ -10,7 +10,7 @@ import lombok.Value;
 @Builder
 public class AnalyticsDeletion {
 
-    UUID installationUuid;
+    String installationUuid;
 
-    Instant timestamp;
+    Instant deletionTimestamp;
 }

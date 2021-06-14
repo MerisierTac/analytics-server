@@ -3,13 +3,11 @@ package fr.gouv.tac.analytics.server.controller;
 import fr.gouv.tac.analytics.server.service.kafka.model.AnalyticsDeletion;
 import fr.gouv.tac.analytics.server.test.IntegrationTest;
 import fr.gouv.tac.analytics.server.test.KafkaManager;
-import org.assertj.core.api.Assert;
-import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static fr.gouv.tac.analytics.server.test.KafkaMatchers.recentAnalyticsDeleteMessageWithInstallationUuid;
@@ -17,8 +15,7 @@ import static fr.gouv.tac.analytics.server.test.RestAssuredManager.givenAuthenti
 import static fr.gouv.tac.analytics.server.test.RestAssuredMatchers.isStringDateBetweenNowAndTenSecondAgo;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -40,7 +37,7 @@ class AnalyticsControllerDeleteTest {
                 .body(emptyString());
 
         assertThat(KafkaManager.awaitMessageValues(AnalyticsDeletion.class))
-                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid(installationUuid))
+                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid(installationUuid.toString()))
                 .hasSize(1);
     }
 
@@ -82,23 +79,50 @@ class AnalyticsControllerDeleteTest {
                 .statusCode(BAD_REQUEST.value())
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
-                .body("message", equalTo("Required UUID parameter 'installationUuid' is not present"))
+                .body("message", equalTo("Required String parameter 'installationUuid' is not present"))
                 .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
                 .body("path", equalTo("/api/v1/analytics"));
     }
 
     @Test
-    void bad_request_on_malformed_param_installationUuid() {
+    void bad_request_on_empty_param_installationUuid() {
         givenAuthenticated()
-                .delete("/api/v1/analytics?installationUuid={uuid}", "INVALID_UUID")
+                .delete("/api/v1/analytics?installationUuid=")
 
                 .then()
                 .contentType(JSON)
                 .statusCode(BAD_REQUEST.value())
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
-                .body("message", equalTo("Failed to convert value of type 'java.lang.String' to required type 'java.util.UUID'; nested exception is java.lang.IllegalArgumentException: Invalid UUID string: INVALID_UUID"))
+                .body("message", equalTo("Request body contains invalid attributes"))
                 .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
-                .body("path", equalTo("/api/v1/analytics"));
+                .body("path", equalTo("/api/v1/analytics"))
+                .body("errors", contains(Map.of(
+                        "field", "deleteAnalytics.installationUuid",
+                        "code", "Size",
+                        "message", "size must be between 1 and 64"
+                )));
+    }
+
+    @Test
+    void bad_request_on_tooLong_param_installationUuid() {
+        final var installationUuid = UUID.randomUUID();
+
+        givenAuthenticated()
+                .delete("/api/v1/analytics?installationUuid={uuid}", installationUuid.toString() + installationUuid.toString())
+
+                .then()
+                .contentType(JSON)
+                .statusCode(BAD_REQUEST.value())
+                .body("status", equalTo(400))
+                .body("error", equalTo("Bad Request"))
+                .body("message", equalTo("Request body contains invalid attributes"))
+                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("path", equalTo("/api/v1/analytics"))
+                .body("errors", contains(Map.of(
+                        "field", "deleteAnalytics.installationUuid",
+                        "code", "Size",
+                        "message", "size must be between 1 and 64"
+                )));
     }
 }

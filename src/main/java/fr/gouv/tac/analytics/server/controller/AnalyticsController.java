@@ -28,7 +28,7 @@ public class AnalyticsController implements AnalyticsApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteAnalytics(UUID installationUuid) {
+    public ResponseEntity<Void> deleteAnalytics(String installationUuid) {
         analyticsService.deleteAnalytics(installationUuid);
         return ResponseEntity.noContent().build();
     }

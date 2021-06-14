@@ -28,10 +28,10 @@ public class AnalyticsService {
                 );
     }
 
-    public void deleteAnalytics(final UUID installationUuid) {
+    public void deleteAnalytics(final String installationUuid) {
         final var analyticsDeletion = AnalyticsDeletion.builder()
                 .installationUuid(installationUuid)
-                .timestamp(Instant.now())
+                .deletionTimestamp(Instant.now())
                 .build();
 
         kafkaTemplate.send(analyticsProperties.getDeletionTopic(), analyticsDeletion)

@@ -13,7 +13,7 @@ import lombok.Value;
 @Builder
 public class AnalyticsCreation {
 
-    UUID installationUuid;
+    String installationUuid;
 
     Map<String, Object> infos;
 

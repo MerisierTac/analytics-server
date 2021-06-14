@@ -20,7 +20,7 @@ public class ExampleData {
         );
         final var timestamp = OffsetDateTime.parse("2020-12-17T10:59:17.123Z");
         return AnalyticsRequest.builder()
-                .installationUuid(UUID.randomUUID())
+                .installationUuid(UUID.randomUUID().toString())
                 .infos(infos)
                 .events(List.of(
                         TimestampedEvent.builder()

@@ -12,21 +12,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class KafkaMatchers {
 
-    public static KafkaDeleteAnalyticsMessageCondition recentAnalyticsDeleteMessageWithInstallationUuid(UUID installationUuid) {
-        return new KafkaDeleteAnalyticsMessageCondition(installationUuid);
-    }
-
     public static KafkaDeleteAnalyticsMessageCondition recentAnalyticsDeleteMessageWithInstallationUuid(String installationUuid) {
-        return new KafkaDeleteAnalyticsMessageCondition(UUID.fromString(installationUuid));
+        return new KafkaDeleteAnalyticsMessageCondition(installationUuid);
     }
 
     public static class KafkaDeleteAnalyticsMessageCondition extends Condition<AnalyticsDeletion> {
 
         private final Instant minTime =  Instant.now().minus(5, SECONDS);
         private final Instant maxTime =  Instant.now();
-        private final UUID expectedInstallationUuid;
+        private final String expectedInstallationUuid;
 
-        public KafkaDeleteAnalyticsMessageCondition(UUID expectedInstallationUuid) {
+        public KafkaDeleteAnalyticsMessageCondition(String expectedInstallationUuid) {
             as("an AnalyticsDeletion with 'installationUuid' %s and 'timestamp' %s < t < %s", expectedInstallationUuid, minTime, maxTime);
             this.expectedInstallationUuid = expectedInstallationUuid;
         }
@@ -37,8 +33,8 @@ public class KafkaMatchers {
                 return false;
             }
             return expectedInstallationUuid.equals(value.getInstallationUuid())
-                    && value.getTimestamp().isAfter(minTime)
-                    && value.getTimestamp().isBefore(maxTime);
+                    && value.getDeletionTimestamp().isAfter(minTime)
+                    && value.getDeletionTimestamp().isBefore(maxTime);
         }
     }
 }
