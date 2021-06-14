@@ -6,15 +6,11 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import lombok.SneakyThrows;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -27,8 +23,8 @@ import java.util.UUID;
 import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.MINUTES;
-import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public class RestAssuredManager implements TestExecutionListener {
 
@@ -39,16 +35,10 @@ public class RestAssuredManager implements TestExecutionListener {
         try {
             JWT_KEY_PAIR = KeyPairGenerator.getInstance("RSA")
                     .generateKeyPair();
-            final var jwtPublicKey = Files.createTempFile("jwt-", ".pub")
-                    .toFile();
-            jwtPublicKey.deleteOnExit();
-            try (final var out = new FileWriter(jwtPublicKey)) {
-                out.write("-----BEGIN PUBLIC KEY-----\n");
-                out.write(Base64.getEncoder().encodeToString(JWT_KEY_PAIR.getPublic().getEncoded()));
-                out.write("\n-----END PUBLIC KEY-----\n");
-            }
-            System.setProperty("spring.security.oauth2.resourceserver.jwt.public-key-location", format("file:%s", jwtPublicKey.getAbsolutePath()));
-        } catch (NoSuchAlgorithmException | IOException e) {
+            final var jwtPublicKey = Base64.getEncoder()
+                    .encodeToString(JWT_KEY_PAIR.getPublic().getEncoded());
+            System.setProperty("analytics.robert-jwt-analytics-public-key", jwtPublicKey);
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
@@ -70,8 +60,8 @@ public class RestAssuredManager implements TestExecutionListener {
 
     private static RequestSpecification givenBaseHeaders() {
         return RestAssured.given()
-                    .accept(JSON)
-                    .header(ACCEPT_LANGUAGE, Locale.US);
+                .accept(JSON)
+                .header(ACCEPT_LANGUAGE, Locale.US);
     }
 
     public static RequestSpecification givenAuthenticated() {

@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Component
@@ -12,6 +13,9 @@ import javax.validation.constraints.NotEmpty;
 @Validated
 @Data
 public class AnalyticsProperties {
+
+    @NotBlank
+    private String robertJwtAnalyticsPublicKey;
 
     @NotEmpty
     private String creationTopic;
