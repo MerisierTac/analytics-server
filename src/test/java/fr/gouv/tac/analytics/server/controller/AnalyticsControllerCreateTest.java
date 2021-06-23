@@ -1,7 +1,6 @@
 package fr.gouv.tac.analytics.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.gouv.tac.analytics.server.service.kafka.model.AnalyticsCreation;
 import fr.gouv.tac.analytics.server.test.ExampleData;
 import fr.gouv.tac.analytics.server.test.IntegrationTest;
 import fr.gouv.tac.analytics.server.test.KafkaManager;
@@ -12,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static fr.gouv.tac.analytics.server.test.RestAssuredMatchers.isStringDateBetweenNowAndTenSecondAgo;
+import static fr.gouv.tac.analytics.server.test.KafkaRecordAssert.assertThat;
 import static fr.gouv.tac.analytics.server.test.RestAssuredManager.givenAuthenticated;
-import static org.assertj.core.api.Assertions.assertThat;
+import static fr.gouv.tac.analytics.server.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
@@ -23,15 +22,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @IntegrationTest
 class AnalyticsControllerCreateTest {
 
-    @Autowired
-    AnalyticsMapper analyticsMapper;
-
     @Test
     void should_send_a_create_message_in_kafka() {
         final var analyticsRequest = ExampleData.analyticsRequest()
                 .build();
-        final var expectedMessage = analyticsMapper.map(analyticsRequest);
-
         givenAuthenticated()
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(analyticsRequest)
@@ -41,8 +35,24 @@ class AnalyticsControllerCreateTest {
                 .statusCode(OK.value())
                 .body(emptyString());
 
-        assertThat(KafkaManager.awaitMessageValues(AnalyticsCreation.class))
-                .containsExactly(expectedMessage);
+        assertThat(KafkaManager.getSingleRecord("dev.analytics.cmd.create"))
+                .hasNoHeader("__TypeId__")
+                .hasNoKey()
+                .hasJsonValue("creationDate", isStringDateBetweenNowAndTenSecondsAgo())
+                .hasJsonValue("infos.os", "Android")
+                .hasJsonValue("infos.type", 0)
+                .hasJsonValue("infos.load", 1.03)
+                .hasJsonValue("infos.root", false)
+                .hasJsonValue("events[0].name", "eventName1")
+                .hasJsonValue("events[0].timestamp", "2020-12-17T10:59:17.123Z")
+                .hasJsonValue("events[0].desc", "event1 description")
+                .hasJsonValue("events[1].name", "eventName2")
+                .hasJsonValue("events[1].timestamp", "2020-12-17T10:59:17.123Z")
+                .hasJsonValue("errors[0].name", "errorName1")
+                .hasJsonValue("errors[0].timestamp", "2020-12-17T10:59:17.123Z")
+                .hasJsonValue("errors[1].name", "errorName2")
+                .hasJsonValue("errors[1].timestamp", "2020-12-17T10:59:17.123Z")
+                .hasJsonValue("errors[1].desc", "error2 description");
     }
 
     @Test
@@ -61,7 +71,7 @@ class AnalyticsControllerCreateTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Request body contains invalid attributes"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"))
                 .body("errors", contains(Map.of(
                         "field", "installationUuid",
@@ -86,7 +96,7 @@ class AnalyticsControllerCreateTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Request body contains invalid attributes"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"))
                 .body("errors", contains(Map.of(
                         "field", "events[0].name",
@@ -111,7 +121,7 @@ class AnalyticsControllerCreateTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Request body contains invalid attributes"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"))
                 .body("errors", contains(Map.of(
                         "field", "events[0].timestamp",
@@ -141,8 +151,9 @@ class AnalyticsControllerCreateTest {
                 .statusCode(BAD_REQUEST.value())
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
-                .body("message", startsWith("JSON parse error: Cannot deserialize value of type `java.time.OffsetDateTime` from String \"2021-06-02T22:47:02.388 PMZ\""))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("message", startsWith(
+                        "JSON parse error: Cannot deserialize value of type `java.time.OffsetDateTime` from String \"2021-06-02T22:47:02.388 PMZ\""))
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"));
     }
 
@@ -162,7 +173,7 @@ class AnalyticsControllerCreateTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Request body contains invalid attributes"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"))
                 .body("errors", contains(Map.of(
                         "field", "errors[0].name",
@@ -187,7 +198,7 @@ class AnalyticsControllerCreateTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Request body contains invalid attributes"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"))
                 .body("errors", contains(Map.of(
                         "field", "errors[0].timestamp",

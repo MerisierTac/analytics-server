@@ -5,17 +5,17 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.AllOf;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.ZonedDateTime;
 
-public class RestAssuredMatchers {
+public class TemporalMatchers {
 
     /**
      * Hamcrest matcher to verify a string representation of a datetime is between now and 10 seconds ago.
      */
-    public static Matcher<String> isStringDateBetweenNowAndTenSecondAgo() {
-        final var dateTimeBetweenNowAndOneSecondAgo = new AllOf<>(isBetweenNowAndTenSecondAgo());
+    public static Matcher<String> isStringDateBetweenNowAndTenSecondsAgo() {
+        final var dateTimeBetweenNowAndOneSecondAgo = isBetweenNowAndTenSecondsAgo();
         return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(String value) {
@@ -33,7 +33,7 @@ public class RestAssuredMatchers {
     /**
      * Hamcrest matcher to verify a {@link ZonedDateTime} is between now and 10 seconds ago.
      */
-    private static Matcher<ZonedDateTime> isBetweenNowAndTenSecondAgo() {
+    private static Matcher<ZonedDateTime> isBetweenNowAndTenSecondsAgo() {
         return Matchers.allOf(
                 ZonedDateTimeMatchers.sameOrAfter(ZonedDateTime.now().minusSeconds(10)),
                 ZonedDateTimeMatchers.sameOrBefore(ZonedDateTime.now())

@@ -9,7 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.UUID;
+import java.time.OffsetDateTime;
 
 @Slf4j
 @Service
@@ -21,7 +21,8 @@ public class AnalyticsService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void createAnalytics(final AnalyticsCreation analytics) {
-        kafkaTemplate.send(analyticsProperties.getCreationTopic(), analytics)
+        final var analyticsEvent = analytics.withCreationDate(OffsetDateTime.now());
+        kafkaTemplate.send(analyticsProperties.getCreationTopic(), analyticsEvent)
                 .addCallback(
                         sendResult -> log.debug("Message successfully sent {}", sendResult),
                         throwable -> log.warn("Analytics creation - error sending message to kafka", throwable)

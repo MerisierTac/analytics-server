@@ -1,18 +1,17 @@
 package fr.gouv.tac.analytics.server.controller;
 
-import fr.gouv.tac.analytics.server.service.kafka.model.AnalyticsDeletion;
 import fr.gouv.tac.analytics.server.test.IntegrationTest;
 import fr.gouv.tac.analytics.server.test.KafkaManager;
+import fr.gouv.tac.analytics.server.test.KafkaRecordAssert;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static fr.gouv.tac.analytics.server.test.KafkaMatchers.recentAnalyticsDeleteMessageWithInstallationUuid;
 import static fr.gouv.tac.analytics.server.test.RestAssuredManager.givenAuthenticated;
-import static fr.gouv.tac.analytics.server.test.RestAssuredMatchers.isStringDateBetweenNowAndTenSecondAgo;
+import static fr.gouv.tac.analytics.server.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -21,9 +20,6 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @IntegrationTest
 class AnalyticsControllerDeleteTest {
-
-    @Autowired
-    AnalyticsMapper analyticsMapper;
 
     @Test
     void can_send_a_delete_message_in_kafka() {
@@ -36,9 +32,11 @@ class AnalyticsControllerDeleteTest {
                 .statusCode(NO_CONTENT.value())
                 .body(emptyString());
 
-        assertThat(KafkaManager.awaitMessageValues(AnalyticsDeletion.class))
-                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid(installationUuid.toString()))
-                .hasSize(1);
+        KafkaRecordAssert.assertThat(KafkaManager.getSingleRecord("dev.analytics.cmd.delete"))
+                .hasNoHeader("__TypeId__")
+                .hasNoKey()
+                .hasJsonValue("installationUuid", installationUuid.toString())
+                .hasJsonValue("deletionTimestamp", isStringDateBetweenNowAndTenSecondsAgo());
     }
 
     @Test
@@ -60,13 +58,15 @@ class AnalyticsControllerDeleteTest {
                     .body(emptyString());
         });
 
-        assertThat(KafkaManager.awaitMessageValues(AnalyticsDeletion.class))
-                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid("8ef146ad-56c1-488a-af2a-99fd5b76b7bd"))
-                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid("21d76e63-7ab4-480e-9ba5-330ee63d38cf"))
-                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid("23498429-3c79-42a8-ac99-bc4c1742c2bd"))
-                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid("ca5739b5-3aad-4f7f-bcb2-5c5b99ffc2a9"))
-                .areExactly(1, recentAnalyticsDeleteMessageWithInstallationUuid("c33a4891-6d43-4fe3-95b6-d28a6bf30deb"))
-                .hasSize(5);
+        final var kafkaRecords = KafkaManager.getRecords().records("dev.analytics.cmd.delete");
+        assertThat(kafkaRecords)
+                .as("each input installationUuid should be in a record")
+                .extracting(record -> record.value().get("installationUuid").textValue())
+                .containsExactlyElementsOf(uuids);
+        assertThat(kafkaRecords)
+                .as("all records should have a recent timestamp")
+                .extracting(record -> record.value().get("deletionTimestamp").textValue())
+                .are(new HamcrestCondition<>(isStringDateBetweenNowAndTenSecondsAgo()));
     }
 
     @Test
@@ -80,7 +80,7 @@ class AnalyticsControllerDeleteTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Required String parameter 'installationUuid' is not present"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"));
     }
 
@@ -95,7 +95,7 @@ class AnalyticsControllerDeleteTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Request body contains invalid attributes"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"))
                 .body("errors", contains(Map.of(
                         "field", "deleteAnalytics.installationUuid",
@@ -109,7 +109,8 @@ class AnalyticsControllerDeleteTest {
         final var installationUuid = UUID.randomUUID();
 
         givenAuthenticated()
-                .delete("/api/v1/analytics?installationUuid={uuid}", installationUuid.toString() + installationUuid.toString())
+                .delete("/api/v1/analytics?installationUuid={uuid}",
+                        installationUuid.toString() + installationUuid.toString())
 
                 .then()
                 .contentType(JSON)
@@ -117,7 +118,7 @@ class AnalyticsControllerDeleteTest {
                 .body("status", equalTo(400))
                 .body("error", equalTo("Bad Request"))
                 .body("message", equalTo("Request body contains invalid attributes"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/analytics"))
                 .body("errors", contains(Map.of(
                         "field", "deleteAnalytics.installationUuid",

@@ -1,10 +1,10 @@
 package fr.gouv.tac.analytics.server.test;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.gouv.tac.analytics.server.config.AnalyticsProperties;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.connect.json.JsonDeserializer;
@@ -16,9 +16,6 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
-import java.util.stream.StreamSupport;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * A {@link TestExecutionListener} to start a Kafka container to be used as a dependency for SpringBootTests.
@@ -28,26 +25,23 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * It starts / closes a consumer before and after each test method.
  * <p>
- * Static methods {@link KafkaManager#awaitMessages()} and {@link KafkaManager#awaitMessageValues(Class)} can be used to
- * fetch messages from Kafka.
+ * Static method {@link KafkaManager#getSingleRecord(String)} can be used to fetch messages from Kafka.
  */
 public class KafkaManager implements TestExecutionListener {
 
-    private static final KafkaContainer KAFKA = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.4.4"));
+    private static final KafkaContainer KAFKA = new KafkaContainer(
+            DockerImageName.parse("confluentinc/cp-kafka:5.4.4"));
 
     static {
         KAFKA.start();
         System.setProperty("spring.kafka.bootstrap-servers", KAFKA.getBootstrapServers());
     }
 
-    private static ObjectMapper objectMapper;
     private static Consumer<String, JsonNode> consumer;
 
     @Override
     @SneakyThrows
     public void beforeTestMethod(TestContext testContext) {
-        objectMapper = testContext.getApplicationContext().getBean(ObjectMapper.class);
-
         final var analyticsProperties = testContext.getApplicationContext().getBean(AnalyticsProperties.class);
         final var topics = List.of(
                 analyticsProperties.getCreationTopic(),
@@ -66,19 +60,11 @@ public class KafkaManager implements TestExecutionListener {
         consumer.close();
     }
 
-    public static ConsumerRecords<String, JsonNode> awaitMessages() {
+    public static ConsumerRecords<String, JsonNode> getRecords() {
         return KafkaTestUtils.getRecords(consumer);
     }
 
-    public static <T> List<T> awaitMessageValues(Class<T> type) {
-        return StreamSupport.stream(awaitMessages().spliterator(), false)
-                .map(record -> record.value().toString())
-                .map(json -> readValue(json, type))
-                .collect(toList());
-    }
-
-    @SneakyThrows
-    private static <T> T readValue(String json, Class<T> type) {
-        return objectMapper.readValue(json, type);
+    public static ConsumerRecord<String, JsonNode> getSingleRecord(String topic) {
+        return KafkaTestUtils.getSingleRecord(consumer, topic);
     }
 }

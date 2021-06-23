@@ -3,7 +3,7 @@ package fr.gouv.tac.analytics.server.controller;
 import fr.gouv.tac.analytics.server.test.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
-import static fr.gouv.tac.analytics.server.test.RestAssuredMatchers.isStringDateBetweenNowAndTenSecondAgo;
+import static fr.gouv.tac.analytics.server.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo;
 import static fr.gouv.tac.analytics.server.test.RestAssuredManager.givenAuthenticated;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.equalTo;
@@ -23,7 +23,7 @@ class ControllerAdviceTest {
                 .body("status", equalTo(404))
                 .body("error", equalTo("Not Found"))
                 .body("message", equalTo("No message available"))
-                .body("timestamp", isStringDateBetweenNowAndTenSecondAgo())
+                .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
                 .body("path", equalTo("/api/v1/unknown"));
     }
 }
