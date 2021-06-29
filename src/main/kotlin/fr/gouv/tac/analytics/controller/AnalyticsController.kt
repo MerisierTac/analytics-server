@@ -21,8 +21,8 @@ class AnalyticsController(private val analyticsService: AnalyticsService) : Anal
             AnalyticsCreation(
                 installationId = analyticsRequest!!.installationUuid,
                 infos = analyticsRequest.infos,
-                events = analyticsRequest.events?.map(toAnalyticsEvent()),
-                errors = analyticsRequest.errors?.map(toAnalyticsEvent())
+                events = analyticsRequest.events.map(toAnalyticsEvent()),
+                errors = analyticsRequest.errors.map(toAnalyticsEvent())
             )
         )
         return ResponseEntity.ok().build()
