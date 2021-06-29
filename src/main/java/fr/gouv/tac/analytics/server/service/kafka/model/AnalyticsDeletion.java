@@ -1,9 +1,7 @@
-package fr.gouv.tac.analytics.server.model.kafka;
+package fr.gouv.tac.analytics.server.service.kafka.model;
 
 import java.time.Instant;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
@@ -13,5 +11,5 @@ public class AnalyticsDeletion {
 
     String installationUuid;
 
-    Instant deletionTimeStamp;
+    Instant deletionTimestamp;
 }

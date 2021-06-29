@@ -1,12 +1,12 @@
 package fr.gouv.tac.analytics.server.config;
 
-import javax.validation.constraints.NotEmpty;
-
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import lombok.Data;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Component
 @ConfigurationProperties(prefix = "analytics")
@@ -14,12 +14,12 @@ import lombok.Data;
 @Data
 public class AnalyticsProperties {
 
+    @NotBlank
+    private String robertJwtAnalyticsPublicKey;
+
     @NotEmpty
     private String creationTopic;
 
     @NotEmpty
     private String deletionTopic;
-
-    @NotEmpty
-    private String robertJwtAnalyticsPublicKey;
 }

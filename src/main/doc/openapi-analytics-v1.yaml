@@ -1,64 +1,63 @@
 openapi: 3.0.0
+
 info:
-  description: "#TOUS-ANTI-COVID, analytics Client API"
-  version: 1.1.0
   title: "tac analytics"
-  termsOfService: https://gitlab.inria.fr/stopcovid19/wp3-robert-server/analytics-server
+  description: "#TOUS-ANTI-COVID, analytics API"
+  version: 1.1.0
+  termsOfService: https://gitlab.inria.fr/stopcovid19/analytics-server
   contact:
     email: stopcovid@inria.fr
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-tags: []
+
+tags: [ ]
+
+security:
+  - bearerAuth: [ ]
+
 paths:
   /analytics:
     post:
       tags: [ "analytics" ]
       summary: Create analytics
-      description: |-
-        Request the creation of analytics. Nothing is returned
-
+      description: Request the creation of analytics.
       operationId: createAnalytics
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/AnalyticsRequest"
+            example:
+              installationUuid: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+              infos:
+                os: Android
+                appVersion: 3.2.4
+                ...: ...
+              events:
+                - name: event-name
+                  timestamp: "2021-06-01T11:28:23.601Z"
+                  desc: Event description
+              errors:
+                - name: error-name
+                  timestamp: "2021-06-01T11:28:23.603Z"
+                  desc: Error desctription
 
       responses:
-        "200":
+        200:
           description: successful operation
-        "400":
-          description: Bad request, something is incorrect in the request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: Unauthorized request, bad, missing or invalid token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "413":
-          description: The request contains too many "infos", "events" or "errors"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          description: An unexpected error occurs
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - bearerAuth: [ ]
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: "#/components/responses/InternalServerError"
     delete:
       tags: [ "analytics" ]
-      summary: delete analytics
-      description: |-
-        Request the deletion of analytics based on the application uuid supplied.
+      summary: Delete analytics
+      description: Request the deletion of analytics based on the application uuid supplied.
       operationId: deleteAnalytics
       parameters:
         - name: installationUuid
@@ -70,22 +69,17 @@ paths:
             minLength: 1
             maxLength: 64
       responses:
-        "204":
-          description: successful operation
-        "401":
-          description: Unauthorized request, bad, missing or invalid token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          description: An unexpected error occurs
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security:
-        - bearerAuth: [ ]
+        204:
+          description: No content, successful operation
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -93,12 +87,48 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  requestBodies:
-    AnalyticsRequest:
+  responses:
+    BadRequest:
+      description: Bad request, parameters or body are invalid
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/AnalyticsRequest"
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            validation error:
+              value:
+                status: 400
+                error: Bad Request
+                message: Request body contains invalid attributes
+                timestamp: "2021-06-01T11:28:23.603Z"
+                path: /api/v1/analytics
+                errors:
+                  - field: installationUuid
+                    code: NotNull
+                    message: The field 'installationUuid' must not be null
+            malformed json body:
+              value:
+                status: 400
+                error: Bad Request
+                message: Unreadable JSON body
+                path: /api/v1/analytics
+                timestamp: "2021-06-01T11:28:23.603Z"
+    Unauthorized:
+      description: Unauthorized, the request lacks valid authentication credentials
+    Forbidden:
+      description: Forbidden, access is denied
+    InternalServerError:
+      description: InternalServerError, an unexpected error occurred
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 400
+            error: Internal Server Error
+            message: No message available
+            path: /api/v1/analytics
+            timestamp: "2021-06-01T11:28:23.603Z"
 
   schemas:
     AnalyticsRequest:
@@ -111,8 +141,6 @@ components:
           description: the installation unique identifier. This identifier is generated by the mobile application during its installation.
         infos:
           $ref: "#/components/schemas/Information"
-          description:
-            The list of infos.
         events:
           type: array
           items:
@@ -128,14 +156,15 @@ components:
       required:
         - installationUuid
 
-
     Information:
       type: object
+      description: A list of additionnal informations
       additionalProperties:
         type: object
 
     TimestampedEvent:
       type: object
+      description: An analytics event
       properties:
         name:
           type: string
@@ -155,13 +184,41 @@ components:
     ErrorResponse:
       type: object
       properties:
+        status:
+          type: integer
+          description: the http status code
+        error:
+          type: string
+          description: the error reason
         message:
           type: string
-          description: the error message
+          description: a detailed error message
         timestamp:
           type: string
           format: date-time
-          description: the error timestamp Date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
+          description: the error timestamp
+        path:
+          type: string
+          description: the original request path
+        errors:
+          type: array
+          items:
+            type: object
+            description: details about the error
+            properties:
+              field:
+                type: string
+                description: the field name having an error
+              code:
+                type: string
+                description: an error code
+              message:
+                type: string
+                description: an error message
+          minLength: 1
       required:
+        - status
+        - error
         - message
         - timestamp
+        - path

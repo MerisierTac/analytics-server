@@ -1,10 +1,5 @@
 spring:
-  application:
-    name: analytics-server
+  application.name: analytics-server
   cloud:
-    consul:
-      enabled: false
-
-    vault:
-      enabled: false
-
+    consul.enabled: false
+    vault.enabled: false
