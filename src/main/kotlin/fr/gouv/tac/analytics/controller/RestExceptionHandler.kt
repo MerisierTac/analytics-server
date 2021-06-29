@@ -52,11 +52,13 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<ErrorResponse> {
 
         val errors = ex.constraintViolations.stream()
-            .map {err: ConstraintViolation<*> -> ErrorResponseErrors(
-                field = err.propertyPath.toString(),
-                code = err.constraintDescriptor.annotation.annotationClass.simpleName,
-                message = err.message
-            )}
+            .map { err: ConstraintViolation<*> ->
+                ErrorResponseErrors(
+                    field = err.propertyPath.toString(),
+                    code = err.constraintDescriptor.annotation.annotationClass.simpleName,
+                    message = err.message
+                )
+            }
             .collect(Collectors.toList())
 
         val errorResponseBody = ErrorResponse(
@@ -65,7 +67,8 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
             message = "Request body contains invalid attributes",
             timestamp = OffsetDateTime.now(),
             path = request.requestURI,
-            errors = errors)
+            errors = errors
+        )
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
             .body(errorResponseBody)
@@ -79,7 +82,7 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         val errorResponseBody = ErrorResponse(
             status = status.value(),
             error = status.reasonPhrase,
-            message = ex.message?:"",
+            message = ex.message ?: "",
             timestamp = OffsetDateTime.now(),
             path = servletRequest!!.requestURI
         )
