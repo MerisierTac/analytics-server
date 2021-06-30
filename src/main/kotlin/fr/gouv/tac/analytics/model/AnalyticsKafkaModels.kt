@@ -1,10 +1,11 @@
 package fr.gouv.tac.analytics.model
 
+import lombok.With
 import java.time.Instant
 import java.time.OffsetDateTime
 
 data class AnalyticsCreation(
-    val installationId: String,
+    val installationUuid: String,
     val infos: Map<String, Any>?,
     val events: List<AnalyticsEvent>?,
     val errors: List<AnalyticsEvent>?,
@@ -18,6 +19,6 @@ data class AnalyticsEvent(
 )
 
 data class AnalyticsDeletion(
-    val installationId: String,
+    val installationUuid: String,
     val deletionTimestamp: Instant
 )

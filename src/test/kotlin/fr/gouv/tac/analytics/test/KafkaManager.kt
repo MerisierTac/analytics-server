@@ -15,6 +15,19 @@ import org.springframework.test.context.TestExecutionListener
 import org.testcontainers.containers.KafkaContainer
 import org.testcontainers.utility.DockerImageName
 
+/**
+ * A [TestExecutionListener] to start a Kafka container to be used as a dependency for SpringBootTests.
+ *
+ *
+ * It starts a Karfka container statically and export required system properties to override Spring application context
+ * configuration.
+ *
+ *
+ * It starts / closes a consumer before and after each test method.
+ *
+ *
+ * Static method [KafkaManager.getSingleRecord] can be used to fetch messages from Kafka.
+ */
 class KafkaManager : TestExecutionListener {
     companion object {
         private val KAFKA = KafkaContainer(
@@ -44,11 +57,11 @@ class KafkaManager : TestExecutionListener {
         val config = KafkaTestUtils.consumerProps(KAFKA.bootstrapServers, "test-consumer", "false")
         consumer = DefaultKafkaConsumerFactory(config, StringDeserializer(), JsonDeserializer())
             .createConsumer()
-        consumer?.subscribe(topics)
+        consumer!!.subscribe(topics)
     }
 
     override fun afterTestMethod(testContext: TestContext) {
-        consumer?.commitSync()
-        consumer?.close()
+        consumer!!.commitSync()
+        consumer!!.close()
     }
 }

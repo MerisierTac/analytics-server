@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 class AnalyticsController(private val analyticsService: AnalyticsService) : AnalyticsApi {
 
     private val log = LoggerFactory.getLogger(AnalyticsController::class.java)
+
     override fun createAnalytics(analyticsRequest: AnalyticsRequest?): ResponseEntity<Unit> {
         analyticsService.createAnalytics(
             AnalyticsCreation(
-                installationId = analyticsRequest!!.installationUuid,
+                installationUuid = analyticsRequest!!.installationUuid,
                 infos = analyticsRequest.infos,
                 events = analyticsRequest.events.map(toAnalyticsEvent()),
                 errors = analyticsRequest.errors.map(toAnalyticsEvent())

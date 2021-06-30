@@ -30,7 +30,7 @@ internal class AnalyticsControllerDeleteTest {
             .hasNoHeader("__TypeId__")
             .hasNoKey()
             .hasJsonValue("installationUuid", installationUuid.toString())
-            .hasJsonValue("deletionTimestamp", isStringDateBetweenNowAndTenSecondsAgo)
+            .hasJsonValue("deletionTimestamp", isStringDateBetweenNowAndTenSecondsAgo())
     }
 
     @Test
@@ -57,7 +57,7 @@ internal class AnalyticsControllerDeleteTest {
         assertThat(kafkaRecords)
             .`as`("all records should have a recent timestamp")
             .extracting<String> { record: ConsumerRecord<String, JsonNode> -> record.value().get("deletionTimestamp").textValue() }
-            .are(HamcrestCondition(isStringDateBetweenNowAndTenSecondsAgo))
+            .are(HamcrestCondition(isStringDateBetweenNowAndTenSecondsAgo()))
     }
 
     @Test
@@ -70,7 +70,7 @@ internal class AnalyticsControllerDeleteTest {
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
             .body("message", Matchers.equalTo("Required String parameter 'installationUuid' is not present"))
-            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo)
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
     }
 
@@ -84,7 +84,7 @@ internal class AnalyticsControllerDeleteTest {
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
             .body("message", Matchers.equalTo("Request body contains invalid attributes"))
-            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo)
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
             .body(
                 "errors", Matchers.contains(
@@ -111,7 +111,7 @@ internal class AnalyticsControllerDeleteTest {
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
             .body("message", Matchers.equalTo("Request body contains invalid attributes"))
-            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo)
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
             .body(
                 "errors", Matchers.contains(
