@@ -20,7 +20,7 @@ internal class ControllerAdviceTest {
             .body("status", Matchers.equalTo(404))
             .body("error", Matchers.equalTo("Not Found"))
             .body("message", Matchers.equalTo("No message available"))
-            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo)
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/unknown"))
     }
 }
