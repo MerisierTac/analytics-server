@@ -49,6 +49,33 @@ internal class AnalyticsControllerCreateTest {
     }
 
     @Test
+    fun bad_request_on_empty_installationUuid() {
+        val analyticsRequest = ExampleData.analyticsRequest().copy(installationUuid = "")
+
+        givenAuthenticated()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(analyticsRequest)
+            .post("/api/v1/analytics")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .body("status", Matchers.equalTo(400))
+            .body("error", Matchers.equalTo("Bad Request"))
+            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
+            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body(
+                "errors", Matchers.contains(
+                    mapOf(
+                        "field" to "installationUuid",
+                        "code" to "Size",
+                        "message" to "size must be between 1 and 64"
+                    )
+                )
+            )
+
+    }
+
+    @Test
     fun bad_request_on_null_installationUuid() {
         val timestamp = OffsetDateTime.parse("2020-12-17T10:59:17.123Z")
 
@@ -61,26 +88,26 @@ internal class AnalyticsControllerCreateTest {
                     "load": 1.03,
                     "root": false
                 },
-                "timestamp": $timestamp,
+                "timestamp": "$timestamp",
                 "events": [
                     {
                         "name": "eventName1",
-                        "timestamp": $timestamp,
+                        "timestamp": "$timestamp",
                         "desc": "event1 description"
                     },
                     {
                         "name": "eventName2",
-                        "timestamp": $timestamp,                        
+                        "timestamp": "$timestamp"
                     }
                 ],
                 "errors": [
                     {
                         "name": "errorName1",
-                        "timestamp": $timestamp,
-                    }
+                        "timestamp": "$timestamp"
+                    },
                     {
                         "name": "errorName2",
-                        "timestamp": $timestamp,
+                        "timestamp": "$timestamp",
                         "desc": "error2 description"
                     }
                 ]
@@ -124,9 +151,70 @@ internal class AnalyticsControllerCreateTest {
                 )
             )
         )
+
         givenAuthenticated()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(analyticsRequest)
+            .post("/api/v1/analytics")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .body("status", Matchers.equalTo(400))
+            .body("error", Matchers.equalTo("Bad Request"))
+            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
+            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body(
+                "errors", Matchers.contains(
+                    mapOf(
+                        "field" to "events[0].name",
+                        "code" to "Size",
+                        "message" to "size must be between 1 and ${Integer.MAX_VALUE}"
+                    )
+                )
+            )
+
+    }
+
+    @Test
+    fun bad_request_on_null_event_name() {
+        val timestamp = OffsetDateTime.parse("2020-12-17T10:59:17.123Z")
+        val analyticsJsonRequest = """
+            {
+                "installationUuid": "${UUID.randomUUID()}",
+                "infos": {
+                    "os": "Android",
+                    "type": 0,
+                    "load": 1.03,
+                    "root": false
+                },
+                "timestamp": "$timestamp",
+                "events": [
+                    {
+                        "name": null,
+                        "timestamp": "$timestamp",
+                        "desc": "event1 description"
+                    },
+                    {
+                        "name": "eventName2",
+                        "timestamp": "$timestamp"
+                    }
+                ],
+                "errors": [
+                    {
+                        "name": "errorName1",
+                        "timestamp": "$timestamp"
+                    },
+                    {
+                        "name": "errorName2",
+                        "timestamp": "$timestamp",
+                        "desc": "error2 description"
+                    }
+                ]
+            }
+            """
+        givenAuthenticated()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(analyticsJsonRequest)
             .post("/api/v1/analytics")
             .then()
             .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -182,19 +270,79 @@ internal class AnalyticsControllerCreateTest {
             errors = listOf(
                 TimestampedEvent(
                     name = "",
-                    timestamp = timestamp
+                    timestamp = timestamp,
+                    desc = "event1 description"
                 ),
                 TimestampedEvent(
                     name = "errorName2",
-                    timestamp = timestamp,
-                    desc = "error2 description"
+                    timestamp = timestamp
                 )
             )
         )
 
         givenAuthenticated()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(analyticsRequest as Any)
+            .body(analyticsRequest)
+            .post("/api/v1/analytics")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .body("status", Matchers.equalTo(400))
+            .body("error", Matchers.equalTo("Bad Request"))
+            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
+            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body(
+                "errors", Matchers.contains(
+                    mapOf(
+                        "field" to "errors[0].name",
+                        "code" to "Size",
+                        "message" to "size must be between 1 and ${Integer.MAX_VALUE}"
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun bad_request_on_null_error_name() {
+        val timestamp = OffsetDateTime.parse("2020-12-17T10:59:17.123Z")
+        val analyticsJsonRequest = """
+            {
+                "installationUuid": "${UUID.randomUUID()}",
+                "infos": {
+                    "os": "Android",
+                    "type": 0,
+                    "load": 1.03,
+                    "root": false
+                },
+                "timestamp": "$timestamp",
+                "events": [
+                    {
+                        "name": "eventName1",
+                        "timestamp": "$timestamp",
+                        "desc": "event1 description"
+                    },
+                    {
+                        "name": "eventName2",
+                        "timestamp": "$timestamp"
+                    }
+                ],
+                "errors": [
+                    {
+                        "name": null,
+                        "timestamp": "$timestamp"
+                    },
+                    {
+                        "name": "errorName2",
+                        "timestamp": "$timestamp",
+                        "desc": "error2 description"
+                    }
+                ]
+            }
+            """
+
+        givenAuthenticated()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(analyticsJsonRequest)
             .post("/api/v1/analytics")
             .then()
             .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -220,33 +368,33 @@ internal class AnalyticsControllerCreateTest {
 
         val analyticsJsonRequest = """
             {
-                "installationUuid": ${UUID.randomUUID()},
+                "installationUuid": "${UUID.randomUUID()}",
                 "infos": {
                     "os": "Android",
                     "type": 0,
                     "load": 1.03,
                     "root": false
                 },
-                "timestamp": $timestamp,
+                "timestamp": "$timestamp",
                 "events": [
                     {
                         "name": "eventName1",
-                        "timestamp": $timestamp,
+                        "timestamp": "$timestamp",
                         "desc": "event1 description"
                     },
                     {
                         "name": "eventName2",
-                        "timestamp": $timestamp,                        
+                        "timestamp": "$timestamp"
                     }
                 ],
                 "errors": [
                     {
                         "name": "errorName1",
-                        "timestamp": null,
-                    }
+                        "timestamp": null
+                    },
                     {
                         "name": "errorName2",
-                        "timestamp": $timestamp,
+                        "timestamp": "$timestamp",
                         "desc": "error2 description"
                     }
                 ]

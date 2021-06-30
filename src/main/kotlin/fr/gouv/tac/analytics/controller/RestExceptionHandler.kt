@@ -1,5 +1,6 @@
 package fr.gouv.tac.analytics.controller
 
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException
 import fr.gouv.tac.analytics.api.model.ErrorResponse
 import fr.gouv.tac.analytics.api.model.ErrorResponseErrors
 import org.springframework.http.HttpHeaders
@@ -24,8 +25,10 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
         ex: MethodArgumentNotValidException,
         headers: HttpHeaders, status: HttpStatus, request: WebRequest
     ): ResponseEntity<Any> {
-        val fieldErrors = ex.fieldErrors.map { err: FieldError -> ErrorResponseErrors(err.field, err.code, err.defaultMessage) }
-        val globalErrors = ex.globalErrors.map { err: ObjectError -> ErrorResponseErrors("", err.code, err.defaultMessage) }
+        val fieldErrors =
+            ex.fieldErrors.map { err: FieldError -> ErrorResponseErrors(err.field, err.code, err.defaultMessage) }
+        val globalErrors =
+            ex.globalErrors.map { err: ObjectError -> ErrorResponseErrors("", err.code, err.defaultMessage) }
         val errorResponseBody = ErrorResponse(
             status = HttpStatus.BAD_REQUEST.value(),
             error = HttpStatus.BAD_REQUEST.reasonPhrase,
@@ -46,12 +49,39 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
     ): ResponseEntity<ErrorResponse> {
 
         val errors = ex.constraintViolations.map { err: ConstraintViolation<*> ->
-                ErrorResponseErrors(
-                    field = err.propertyPath.toString(),
-                    code = err.constraintDescriptor.annotation.annotationClass.simpleName,
-                    message = err.message
-                )
-            }
+            ErrorResponseErrors(
+                field = err.propertyPath.toString(),
+                code = err.constraintDescriptor.annotation.annotationClass.simpleName,
+                message = err.message
+            )
+        }
+
+        val errorResponseBody = ErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            message = "Request body contains invalid attributes",
+            timestamp = OffsetDateTime.now(),
+            path = request.requestURI,
+            errors = errors
+        )
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST.value())
+            .body(errorResponseBody)
+    }
+
+    @ExceptionHandler
+    fun handle(
+        ex: ValueInstantiationException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+
+        val errors = listOf(
+            ErrorResponseErrors(
+                field = ex.path.toString(),
+                code = ex.javaClass.simpleName,
+                message = ex.originalMessage
+            )
+        )
 
         val errorResponseBody = ErrorResponse(
             status = HttpStatus.BAD_REQUEST.value(),
