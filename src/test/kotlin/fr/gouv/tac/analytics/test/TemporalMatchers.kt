@@ -1,12 +1,10 @@
 package fr.gouv.tac.analytics.test
 
-import fr.gouv.tac.analytics.controller.AnalyticsController
 import org.exparity.hamcrest.date.ZonedDateTimeMatchers
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.hamcrest.TypeSafeMatcher
-import org.slf4j.LoggerFactory
 import java.time.ZonedDateTime
 
 object TemporalMatchers {

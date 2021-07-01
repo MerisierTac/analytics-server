@@ -14,7 +14,6 @@ import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import java.time.OffsetDateTime.now
 import javax.servlet.http.HttpServletRequest
-import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
 
 @RestControllerAdvice(annotations = [Controller::class])

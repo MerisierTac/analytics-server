@@ -1,8 +1,8 @@
 package fr.gouv.tac.analytics.controller
 
 import fr.gouv.tac.analytics.test.IntegrationTest
-import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
+import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
 import io.restassured.http.ContentType
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test

@@ -2,7 +2,6 @@ package fr.gouv.tac.analytics.controller
 
 import fr.gouv.tac.analytics.api.AnalyticsApi
 import fr.gouv.tac.analytics.api.model.AnalyticsRequest
-import fr.gouv.tac.analytics.api.model.TimestampedEvent
 import fr.gouv.tac.analytics.model.AnalyticsCreation
 import fr.gouv.tac.analytics.model.AnalyticsEvent
 import fr.gouv.tac.analytics.service.AnalyticsService
