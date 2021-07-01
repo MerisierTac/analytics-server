@@ -188,9 +188,7 @@
                                 <gradleBuildFile>false</gradleBuildFile>
                                 <useTags>true</useTags>
                                 <serializationLibrary>jackson</serializationLibrary>
-                                <additionalModelTypeAnnotations>
-                                    @lombok.With
-                                </additionalModelTypeAnnotations>
+                                <exceptionHandler>false</exceptionHandler>
                             </configOptions>
                         </configuration>
                     </execution>
