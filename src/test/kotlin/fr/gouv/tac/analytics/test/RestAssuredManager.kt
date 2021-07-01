@@ -10,6 +10,7 @@ import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
 import lombok.SneakyThrows
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
 import java.security.KeyPair
@@ -38,17 +39,13 @@ class RestAssuredManager : TestExecutionListener {
         fun givenAuthenticated(): RequestSpecification {
             return givenBaseHeaders()
                 .header(
-                    HttpHeaders.AUTHORIZATION, String.format(
-                        "Bearer %s", generateToken(
-                            defaultJwtClaims()
-                        )
-                    )
+                    AUTHORIZATION, "Bearer ${generateToken(defaultJwtClaims())}"
                 )
         }
 
         fun givenJwt(claims: JWTClaimsSet.Builder): RequestSpecification {
             return givenBaseHeaders()
-                .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", generateToken(claims)))
+                .header(AUTHORIZATION, "Bearer ${generateToken(claims)}")
         }
 
         @SneakyThrows

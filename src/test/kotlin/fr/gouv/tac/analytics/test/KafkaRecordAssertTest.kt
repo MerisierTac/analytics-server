@@ -63,7 +63,7 @@ class KafkaRecordAssertTest {
         }
             .hasMessage(
                 ("\nExpecting:\n  <\"Robert\">\n"
-                        + "to satisfy:\n  <<\"clea\">>")
+                        + "to satisfy:\n  <\"clea\">")
             )
     }
 }

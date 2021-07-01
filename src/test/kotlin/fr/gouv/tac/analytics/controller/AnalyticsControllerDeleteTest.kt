@@ -102,8 +102,7 @@ internal class AnalyticsControllerDeleteTest {
         val installationUuid = UUID.randomUUID()
         givenAuthenticated()
             .delete(
-                "/api/v1/analytics?installationUuid={uuid}",
-                installationUuid.toString() + installationUuid.toString()
+                "/api/v1/analytics?installationUuid={uuid}", installationUuid.toString() + installationUuid.toString()
             )
             .then()
             .contentType(ContentType.JSON)
