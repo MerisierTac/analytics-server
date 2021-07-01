@@ -33,8 +33,8 @@ class WebSecurityConfiguration(val analyticsProperties: AnalyticsProperties) : W
         http.authorizeRequests()
             .requestMatchers(EndpointRequest.toAnyEndpoint())
             .permitAll()
-            .antMatchers("/status").permitAll()
-            .anyRequest().authenticated()
+//            .antMatchers("/status").permitAll()
+//            .anyRequest().authenticated()
     }
 
     @Bean
