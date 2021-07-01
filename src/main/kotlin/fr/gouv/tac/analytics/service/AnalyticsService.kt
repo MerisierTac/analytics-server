@@ -8,6 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.SendResult
 import org.springframework.stereotype.Service
 import java.time.Instant
+import java.time.Instant.now
 import java.time.OffsetDateTime
 
 @Service
@@ -21,38 +22,20 @@ class AnalyticsService(
         val analyticsEvent = analytics.copy(creationDate = OffsetDateTime.now())
         kafkaTemplate.send(analyticsProperties.creationTopic, analyticsEvent)
             .addCallback(
-                { sendResult: SendResult<String, Any>? ->
-                    log.debug(
-                        "Message successfully sent {}",
-                        sendResult
-                    )
-                }
-            ) { throwable: Throwable? ->
-                log.warn(
-                    "Analytics creation - error sending message to kafka",
-                    throwable
-                )
-            }
+                { log.debug("Message successfully sent {}", it) },
+                { log.warn("Analytics creation - error sending message to kafka", it) }
+            )
     }
 
     fun deleteAnalytics(installationUuid: String) {
         val analyticsDeletion = AnalyticsDeletion(
             installationUuid = installationUuid,
-            deletionTimestamp = Instant.now()
+            deletionTimestamp = now()
         )
         kafkaTemplate.send(analyticsProperties.deletionTopic, analyticsDeletion)
             .addCallback(
-                { sendResult: SendResult<String, Any>? ->
-                    log.debug(
-                        "Message successfully sent {}",
-                        sendResult
-                    )
-                }
-            ) { throwable: Throwable? ->
-                log.warn(
-                    "Analytics deletion - error sending message to kafka",
-                    throwable
-                )
-            }
+                { log.debug("Message successfully sent {}", it) },
+                { log.warn("Analytics deletion - error sending message to kafka", it) }
+            )
     }
 }
