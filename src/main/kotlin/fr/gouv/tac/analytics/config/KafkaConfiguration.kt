@@ -1,7 +1,6 @@
 package fr.gouv.tac.analytics.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import lombok.RequiredArgsConstructor
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
