@@ -3,6 +3,7 @@ package fr.gouv.tac.analytics.controller
 import com.fasterxml.jackson.databind.JsonNode
 import fr.gouv.tac.analytics.test.IntegrationTest
 import fr.gouv.tac.analytics.test.KafkaManager
+import fr.gouv.tac.analytics.test.KafkaManager.Companion.records
 import fr.gouv.tac.analytics.test.KafkaRecordAssert
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
 import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
@@ -49,7 +50,7 @@ internal class AnalyticsControllerDeleteTest {
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .body(Matchers.emptyString())
         })
-        val kafkaRecords = KafkaManager.records.records("dev.analytics.cmd.delete")
+        val kafkaRecords = records.records("dev.analytics.cmd.delete")
         assertThat(kafkaRecords)
             .`as`("each input installationUuid should be in a record")
             .extracting<String> { record: ConsumerRecord<String, JsonNode> -> record.value().get("installationUuid").textValue() }
