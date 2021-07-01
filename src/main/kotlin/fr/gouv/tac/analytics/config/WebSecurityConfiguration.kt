@@ -1,6 +1,5 @@
 package fr.gouv.tac.analytics.config
 
-import lombok.RequiredArgsConstructor
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -18,7 +17,6 @@ import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
 @EnableWebSecurity
-@RequiredArgsConstructor
 class WebSecurityConfiguration(val analyticsProperties: AnalyticsProperties) : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
