@@ -2,7 +2,6 @@ package fr.gouv.tac.analytics.test
 
 import com.fasterxml.jackson.databind.JsonNode
 import fr.gouv.tac.analytics.config.AnalyticsProperties
-import lombok.SneakyThrows
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
@@ -47,7 +46,6 @@ class KafkaManager : TestExecutionListener {
         }
     }
 
-    @SneakyThrows
     override fun beforeTestMethod(testContext: TestContext) {
         val analyticsProperties = testContext.applicationContext.getBean(AnalyticsProperties::class.java)
         val topics = listOf(

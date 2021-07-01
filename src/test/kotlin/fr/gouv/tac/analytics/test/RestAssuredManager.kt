@@ -8,7 +8,6 @@ import com.nimbusds.jwt.SignedJWT
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
-import lombok.SneakyThrows
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.test.context.TestContext
@@ -48,7 +47,6 @@ class RestAssuredManager : TestExecutionListener {
                 .header(AUTHORIZATION, "Bearer ${generateToken(claims)}")
         }
 
-        @SneakyThrows
         private fun generateToken(claims: JWTClaimsSet.Builder): String {
             val header = JWSHeader.Builder(JWSAlgorithm.RS256).build()
             val signedJWT = SignedJWT(header, claims.build())
