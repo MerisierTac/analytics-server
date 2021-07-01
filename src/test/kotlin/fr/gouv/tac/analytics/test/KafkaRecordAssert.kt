@@ -15,7 +15,7 @@ class KafkaRecordAssert private constructor(private val actualRecord: ConsumerRe
         actualRecord,
         KafkaRecordAssert::class.java
     ) {
-    private fun <T> hasJsonValue(jsonPath: String?, matcher: Matcher<T>?): KafkaRecordAssert {
+    fun <T> hasJsonValue(jsonPath: String?, matcher: Matcher<T>?): KafkaRecordAssert {
         val jsonValue = actualRecord.value()?.toPrettyString()
         val jsonPathValue: T = JsonPath.compile(jsonPath).read(jsonValue)
         assertThat(jsonPathValue).satisfies(HamcrestCondition(matcher))

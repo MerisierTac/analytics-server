@@ -1,15 +1,17 @@
 package fr.gouv.tac.analytics.controller
 
-import com.fasterxml.jackson.databind.exc.ValueInstantiationException
 import fr.gouv.tac.analytics.api.model.ErrorResponse
 import fr.gouv.tac.analytics.api.model.ErrorResponseErrors
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
@@ -18,7 +20,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
 
-@RestControllerAdvice
+@RestControllerAdvice(annotations = [Controller::class])
 class RestExceptionHandler(private val servletRequest: HttpServletRequest) : ResponseEntityExceptionHandler() {
 
     override fun handleMethodArgumentNotValid(
@@ -62,43 +64,18 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
             message = "Request body contains invalid attributes",
             timestamp = OffsetDateTime.now(),
             path = request.requestURI,
-            errors = errors
-        )
-        return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST.value())
-            .body(errorResponseBody)
-    }
-
-    @ExceptionHandler
-    fun handle(
-        ex: ValueInstantiationException,
-        request: HttpServletRequest
-    ): ResponseEntity<ErrorResponse> {
-
-        val errors = listOf(
-            ErrorResponseErrors(
-                field = ex.path.toString(),
-                code = ex.javaClass.simpleName,
-                message = ex.originalMessage
-            )
-        )
-
-        val errorResponseBody = ErrorResponse(
-            status = HttpStatus.BAD_REQUEST.value(),
-            error = HttpStatus.BAD_REQUEST.reasonPhrase,
-            message = "Request body contains invalid attributes",
-            timestamp = OffsetDateTime.now(),
-            path = request.requestURI,
-            errors = errors
-        )
+            errors = errors)
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
             .body(errorResponseBody)
     }
 
     override fun handleExceptionInternal(
-        ex: Exception, body: Any?, headers: HttpHeaders,
-        status: HttpStatus, request: WebRequest
+        ex: Exception,
+        body: Any?,
+        headers: HttpHeaders,
+        status: HttpStatus,
+        request: WebRequest
     ): ResponseEntity<Any> {
         super.handleExceptionInternal(ex, body, headers, status, request)
         val errorResponseBody = ErrorResponse(

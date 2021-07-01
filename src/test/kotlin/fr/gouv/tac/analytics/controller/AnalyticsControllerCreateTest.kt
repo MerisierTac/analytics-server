@@ -121,18 +121,9 @@ internal class AnalyticsControllerCreateTest {
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body(
-                "errors", Matchers.contains(
-                    mapOf(
-                        "field" to "installationUuid",
-                        "code" to "NotNull",
-                        "message" to "must not be null"
-                    )
-                )
-            )
+            .body("errors", Matchers.nullValue())
     }
 
     @Test
@@ -220,18 +211,9 @@ internal class AnalyticsControllerCreateTest {
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body(
-                "errors", Matchers.contains(
-                    mapOf(
-                        "field" to "events[0].name",
-                        "code" to "NotNull",
-                        "message" to "must not be null"
-                    )
-                )
-            )
+            .body("errors", Matchers.nullValue())
     }
 
     @Test
@@ -348,18 +330,9 @@ internal class AnalyticsControllerCreateTest {
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body(
-                "errors", Matchers.contains(
-                    mapOf(
-                        "field" to "errors[0].name",
-                        "code" to "NotNull",
-                        "message" to "must not be null"
-                    )
-                )
-            )
+            .body("errors", Matchers.nullValue())
     }
 
     @Test
@@ -409,17 +382,8 @@ internal class AnalyticsControllerCreateTest {
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body(
-                "errors", Matchers.contains(
-                    mapOf(
-                        "field" to "errors[0].timestamp",
-                        "code" to "NotNull",
-                        "message" to "must not be null"
-                    )
-                )
-            )
+            .body("errors", Matchers.nullValue())
     }
 }
