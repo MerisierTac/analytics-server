@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 @IntegrationTest
 internal class AnalyticsControllerCreateTest {
@@ -64,7 +64,8 @@ internal class AnalyticsControllerCreateTest {
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
             .body(
-                "errors", Matchers.contains(
+                "errors",
+                Matchers.contains(
                     mapOf(
                         "field" to "installationUuid",
                         "code" to "Size",
@@ -72,7 +73,6 @@ internal class AnalyticsControllerCreateTest {
                     )
                 )
             )
-
     }
 
     @Test
@@ -155,7 +155,8 @@ internal class AnalyticsControllerCreateTest {
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
             .body(
-                "errors", Matchers.contains(
+                "errors",
+                Matchers.contains(
                     mapOf(
                         "field" to "events[0].name",
                         "code" to "Size",
@@ -163,7 +164,6 @@ internal class AnalyticsControllerCreateTest {
                     )
                 )
             )
-
     }
 
     @Test
@@ -237,7 +237,8 @@ internal class AnalyticsControllerCreateTest {
             .body("status", Matchers.equalTo(400))
             .body("error", Matchers.equalTo("Bad Request"))
             .body(
-                "message", Matchers.startsWith(
+                "message",
+                Matchers.startsWith(
                     "JSON parse error: Cannot deserialize value of type `java.time.OffsetDateTime` from String \"2021-06-02T22:47:02.388 PMZ\""
                 )
             )
@@ -274,7 +275,8 @@ internal class AnalyticsControllerCreateTest {
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
             .body(
-                "errors", Matchers.contains(
+                "errors",
+                Matchers.contains(
                     mapOf(
                         "field" to "errors[0].name",
                         "code" to "Size",

@@ -3,8 +3,7 @@ package fr.gouv.tac.analytics.test
 import fr.gouv.tac.analytics.api.model.AnalyticsRequest
 import fr.gouv.tac.analytics.api.model.TimestampedEvent
 import java.time.OffsetDateTime
-import java.util.*
-
+import java.util.UUID
 
 object ExampleData {
     fun analyticsRequest(): AnalyticsRequest {

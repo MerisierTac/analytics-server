@@ -21,7 +21,9 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
 
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,
-        headers: HttpHeaders, status: HttpStatus, request: WebRequest
+        headers: HttpHeaders,
+        status: HttpStatus,
+        request: WebRequest
     ): ResponseEntity<Any> {
         val fieldErrors =
             ex.fieldErrors.map { ErrorResponseErrors(it.field, it.code, it.defaultMessage) }
@@ -44,7 +46,8 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
 
-        val errors = ex.constraintViolations.map { ErrorResponseErrors(
+        val errors = ex.constraintViolations.map {
+            ErrorResponseErrors(
                 field = it.propertyPath.toString(),
                 code = it.constraintDescriptor.annotation.annotationClass.simpleName,
                 message = it.message
