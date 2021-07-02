@@ -17,7 +17,10 @@ import java.security.KeyPairGenerator
 import java.security.NoSuchAlgorithmException
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Base64
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 
 class RestAssuredManager : TestExecutionListener {
     companion object {

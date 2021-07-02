@@ -12,7 +12,7 @@ object TemporalMatchers {
      * Hamcrest matcher to verify a string representation of a datetime is between now and 10 seconds ago.
      */
     fun isStringDateBetweenNowAndTenSecondsAgo(): Matcher<String> {
-        return object: TypeSafeMatcher<String>() {
+        return object : TypeSafeMatcher<String>() {
             override fun matchesSafely(value: String): Boolean {
                 val actualDate = ZonedDateTime.parse(value)
                 return isBetweenNowAndTenSecondsAgo().matches(actualDate)
@@ -28,7 +28,7 @@ object TemporalMatchers {
      * Hamcrest matcher to verify a [ZonedDateTime] is between now and 10 seconds ago.
      */
     private fun isBetweenNowAndTenSecondsAgo(): Matcher<ZonedDateTime> = Matchers.allOf(
-            ZonedDateTimeMatchers.sameOrAfter(ZonedDateTime.now().minusSeconds(10)),
-            ZonedDateTimeMatchers.sameOrBefore(ZonedDateTime.now())
-        )
+        ZonedDateTimeMatchers.sameOrAfter(ZonedDateTime.now().minusSeconds(10)),
+        ZonedDateTimeMatchers.sameOrBefore(ZonedDateTime.now())
+    )
 }

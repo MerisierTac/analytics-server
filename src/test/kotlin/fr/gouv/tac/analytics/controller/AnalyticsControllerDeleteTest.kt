@@ -14,7 +14,7 @@ import org.assertj.core.api.HamcrestCondition
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
-import java.util.*
+import java.util.UUID
 import java.util.function.Consumer
 
 @IntegrationTest
@@ -43,13 +43,15 @@ internal class AnalyticsControllerDeleteTest {
             "ca5739b5-3aad-4f7f-bcb2-5c5b99ffc2a9",
             "c33a4891-6d43-4fe3-95b6-d28a6bf30deb"
         )
-        uuids.forEach(Consumer { installationUuid: String? ->
-            givenAuthenticated()
-                .delete("/api/v1/analytics?installationUuid={uuid}", installationUuid)
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value())
-                .body(Matchers.emptyString())
-        })
+        uuids.forEach(
+            Consumer { installationUuid: String? ->
+                givenAuthenticated()
+                    .delete("/api/v1/analytics?installationUuid={uuid}", installationUuid)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value())
+                    .body(Matchers.emptyString())
+            }
+        )
         val kafkaRecords = records.records("dev.analytics.cmd.delete")
         assertThat(kafkaRecords)
             .`as`("each input installationUuid should be in a record")
@@ -88,7 +90,8 @@ internal class AnalyticsControllerDeleteTest {
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
             .body(
-                "errors", Matchers.contains(
+                "errors",
+                Matchers.contains(
                     mapOf(
                         "field" to "deleteAnalytics.installationUuid",
                         "code" to "Size",
@@ -114,7 +117,8 @@ internal class AnalyticsControllerDeleteTest {
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", Matchers.equalTo("/api/v1/analytics"))
             .body(
-                "errors", Matchers.contains(
+                "errors",
+                Matchers.contains(
                     mapOf(
                         "field" to "deleteAnalytics.installationUuid",
                         "code" to "Size",

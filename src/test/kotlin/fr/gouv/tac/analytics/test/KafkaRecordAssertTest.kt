@@ -27,9 +27,9 @@ class KafkaRecordAssertTest {
         Assertions.assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoKey() } }
             .hasMessage(
                 "[Kafka record shouldn't have a key] \n" +
-                        "Expecting:\n <\"key\">\n" +
-                        "to be equal to:\n <null>\n" +
-                        "but was not."
+                    "Expecting:\n <\"key\">\n" +
+                    "to be equal to:\n <null>\n" +
+                    "but was not."
             )
     }
 
@@ -38,7 +38,7 @@ class KafkaRecordAssertTest {
         Assertions.assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoHeader("TestHeader") } }
             .hasMessage(
                 "[Kafka record shouldn't have a 'TestHeader' header] \n" +
-                        "Expecting empty but was:<[\"HeaderValue\"]>"
+                    "Expecting empty but was:<[\"HeaderValue\"]>"
             )
     }
 
@@ -46,8 +46,8 @@ class KafkaRecordAssertTest {
     fun can_detect_hasJsonValue_mismatch() {
         Assertions.assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasJsonValue("name", "clea") } }
             .hasMessage(
-                "\nExpecting:\n  <\"Robert\">\n"
-                        + "to satisfy:\n  <\"clea\">"
+                "\nExpecting:\n  <\"Robert\">\n" +
+                    "to satisfy:\n  <\"clea\">"
             )
     }
 
@@ -62,8 +62,10 @@ class KafkaRecordAssertTest {
             }
         }
             .hasMessage(
-                ("\nExpecting:\n  <\"Robert\">\n"
-                        + "to satisfy:\n  <\"clea\">")
+                (
+                    "\nExpecting:\n  <\"Robert\">\n" +
+                        "to satisfy:\n  <\"clea\">"
+                    )
             )
     }
 }
