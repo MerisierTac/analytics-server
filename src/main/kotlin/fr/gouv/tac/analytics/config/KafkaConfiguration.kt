@@ -11,7 +11,10 @@ import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.support.serializer.JsonSerializer
 
 @Configuration
-class KafkaConfiguration(private val kafkaProperties: KafkaProperties, private val objectMapper: ObjectMapper) {
+class KafkaConfiguration(
+    private val kafkaProperties: KafkaProperties,
+    private val objectMapper: ObjectMapper
+) {
 
     @Bean
     fun producerFactory(): ProducerFactory<String, Any> {

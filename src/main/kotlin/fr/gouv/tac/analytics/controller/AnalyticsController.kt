@@ -5,7 +5,6 @@ import fr.gouv.tac.analytics.api.model.AnalyticsRequest
 import fr.gouv.tac.analytics.model.AnalyticsCreation
 import fr.gouv.tac.analytics.model.AnalyticsEvent
 import fr.gouv.tac.analytics.service.AnalyticsService
-import org.slf4j.LoggerFactory.getLogger
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 @RequestMapping(path = ["/api/v1"])
 class AnalyticsController(private val analyticsService: AnalyticsService) : AnalyticsApi {
-
-    private val log = getLogger(AnalyticsController::class.java)
 
     override fun createAnalytics(analyticsRequest: AnalyticsRequest?): ResponseEntity<Unit> {
         analyticsService.createAnalytics(

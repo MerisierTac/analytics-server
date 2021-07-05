@@ -1,14 +1,14 @@
 package fr.gouv.tac.analytics.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.stereotype.Component
+import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.validation.annotation.Validated
 
-@Component
-@ConfigurationProperties(prefix = "analytics")
 @Validated
+@ConstructorBinding
+@ConfigurationProperties(prefix = "analytics")
 class AnalyticsProperties(
-    var creationTopic: String = "",
-    var deletionTopic: String = "",
-    var robertJwtAnalyticsPublicKey: String = ""
+    val creationTopic: String,
+    val deletionTopic: String,
+    val robertJwtAnalyticsPublicKey: String
 )

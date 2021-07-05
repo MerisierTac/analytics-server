@@ -10,16 +10,12 @@ import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import java.security.KeyFactory
-import java.security.NoSuchAlgorithmException
 import java.security.interfaces.RSAPublicKey
-import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
-
 @EnableWebSecurity
 class WebSecurityConfiguration(val analyticsProperties: AnalyticsProperties) : WebSecurityConfigurerAdapter() {
 
-    @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -36,7 +32,6 @@ class WebSecurityConfiguration(val analyticsProperties: AnalyticsProperties) : W
     }
 
     @Bean
-    @Throws(NoSuchAlgorithmException::class, InvalidKeySpecException::class)
     fun jwtDecoder(): JwtDecoder {
         val keySpec: ByteArray = Base64.getMimeDecoder()
             .decode(analyticsProperties.robertJwtAnalyticsPublicKey)
