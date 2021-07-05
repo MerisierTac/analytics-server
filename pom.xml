@@ -166,7 +166,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${project.basedir}/src/main/resources/openapi-analytics-v1.yaml
+                                ${project.basedir}/src/main/resources/api-analytics-v1.yaml
                             </inputSpec>
                             <generatorName>kotlin-spring</generatorName>
                             <apiPackage>fr.gouv.tac.analytics.api</apiPackage>
