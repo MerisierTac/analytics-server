@@ -13,6 +13,7 @@ import java.security.KeyFactory
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
+
 @EnableWebSecurity
 class WebSecurityConfiguration(val analyticsProperties: AnalyticsProperties) : WebSecurityConfigurerAdapter() {
 
