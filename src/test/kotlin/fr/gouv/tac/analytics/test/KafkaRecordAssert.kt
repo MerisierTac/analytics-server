@@ -15,25 +15,21 @@ class KafkaRecordAssert private constructor(private val actualRecord: ConsumerRe
         actualRecord,
         KafkaRecordAssert::class.java
     ) {
-    fun <T> hasJsonValue(jsonPath: String?, matcher: Matcher<T>?): KafkaRecordAssert {
+    fun <T> hasJsonValue(jsonPath: String, matcher: Matcher<T>?): KafkaRecordAssert {
         val jsonValue = actualRecord.value()?.toPrettyString()
         val jsonPathValue: T = JsonPath.compile(jsonPath).read(jsonValue)
         assertThat(jsonPathValue).satisfies(HamcrestCondition(matcher))
         return this
     }
 
-    fun <T> hasJsonValue(jsonPath: String?, expectedValue: T): KafkaRecordAssert {
+    fun <T> hasJsonValue(jsonPath: String, expectedValue: T): KafkaRecordAssert {
         return hasJsonValue(jsonPath, IsEqual(expectedValue))
     }
 
-    fun hasNoHeader(headerName: String?): KafkaRecordAssert {
+    fun hasNoHeader(headerName: String): KafkaRecordAssert {
         assertThat(actualRecord.headers().headers(headerName))
-            .extracting<ByteArray, RuntimeException> { obj: Header -> obj.value() }
-            .extracting<String, RuntimeException> { bytes: ByteArray? ->
-                String(
-                    bytes!!
-                )
-            }
+            .extracting<ByteArray, RuntimeException> { header: Header -> header.value() }
+            .extracting<String, RuntimeException> { headerByteValue: ByteArray -> String(headerByteValue) }
             .`as`("Kafka record shouldn't have a '%s' header", headerName)
             .isEmpty()
         return this

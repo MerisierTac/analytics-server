@@ -3,31 +3,33 @@ package fr.gouv.tac.analytics.controller
 import com.fasterxml.jackson.databind.JsonNode
 import fr.gouv.tac.analytics.test.IntegrationTest
 import fr.gouv.tac.analytics.test.KafkaManager
-import fr.gouv.tac.analytics.test.KafkaManager.Companion.records
-import fr.gouv.tac.analytics.test.KafkaRecordAssert
+import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
 import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
-import io.restassured.http.ContentType
+import io.restassured.http.ContentType.JSON
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.HamcrestCondition
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.contains
+import org.hamcrest.Matchers.emptyString
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.NO_CONTENT
 import java.util.UUID
 import java.util.function.Consumer
 
 @IntegrationTest
-internal class AnalyticsControllerDeleteTest {
+class AnalyticsControllerDeleteTest {
     @Test
     fun can_send_a_delete_message_in_kafka() {
         val installationUuid = UUID.randomUUID()
         givenAuthenticated()
             .delete("/api/v1/analytics?installationUuid={uuid}", installationUuid)
             .then()
-            .statusCode(HttpStatus.NO_CONTENT.value())
-            .body(Matchers.emptyString())
-        KafkaRecordAssert.assertThat(KafkaManager.getSingleRecord("dev.analytics.cmd.delete"))
+            .statusCode(NO_CONTENT.value())
+            .body(emptyString())
+        assertThat(KafkaManager.getSingleRecord("dev.analytics.cmd.delete"))
             .hasNoHeader("__TypeId__")
             .hasNoKey()
             .hasJsonValue("installationUuid", installationUuid.toString())
@@ -48,11 +50,11 @@ internal class AnalyticsControllerDeleteTest {
                 givenAuthenticated()
                     .delete("/api/v1/analytics?installationUuid={uuid}", installationUuid)
                     .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value())
-                    .body(Matchers.emptyString())
+                    .statusCode(NO_CONTENT.value())
+                    .body(emptyString())
             }
         )
-        val kafkaRecords = records.records("dev.analytics.cmd.delete")
+        val kafkaRecords = KafkaManager.getRecords().records("dev.analytics.cmd.delete")
         assertThat(kafkaRecords)
             .`as`("each input installationUuid should be in a record")
             .extracting<String> { record: ConsumerRecord<String, JsonNode> -> record.value().get("installationUuid").textValue() }
@@ -68,13 +70,13 @@ internal class AnalyticsControllerDeleteTest {
         givenAuthenticated()
             .delete("/api/v1/analytics")
             .then()
-            .contentType(ContentType.JSON)
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Required String parameter 'installationUuid' is not present"))
+            .contentType(JSON)
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Required String parameter 'installationUuid' is not present"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body("path", equalTo("/api/v1/analytics"))
     }
 
     @Test
@@ -82,16 +84,16 @@ internal class AnalyticsControllerDeleteTest {
         givenAuthenticated()
             .delete("/api/v1/analytics?installationUuid=")
             .then()
-            .contentType(ContentType.JSON)
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .contentType(JSON)
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body("path", equalTo("/api/v1/analytics"))
             .body(
                 "errors",
-                Matchers.contains(
+                contains(
                     mapOf(
                         "field" to "deleteAnalytics.installationUuid",
                         "code" to "Size",
@@ -109,16 +111,16 @@ internal class AnalyticsControllerDeleteTest {
                 "/api/v1/analytics?installationUuid={uuid}", installationUuid.toString() + installationUuid.toString()
             )
             .then()
-            .contentType(ContentType.JSON)
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .contentType(JSON)
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body("path", equalTo("/api/v1/analytics"))
             .body(
                 "errors",
-                Matchers.contains(
+                contains(
                     mapOf(
                         "field" to "deleteAnalytics.installationUuid",
                         "code" to "Size",
