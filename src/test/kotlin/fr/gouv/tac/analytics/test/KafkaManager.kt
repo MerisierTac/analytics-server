@@ -33,8 +33,8 @@ class KafkaManager : TestExecutionListener {
             DockerImageName.parse("confluentinc/cp-kafka:5.4.4")
         )
         private var consumer: Consumer<String, JsonNode>? = null
-        val records: ConsumerRecords<String, JsonNode>
-            get() = KafkaTestUtils.getRecords(consumer)
+
+        fun getRecords(): ConsumerRecords<String, JsonNode> = KafkaTestUtils.getRecords(consumer)
 
         fun getSingleRecord(topic: String?): ConsumerRecord<String, JsonNode> {
             return KafkaTestUtils.getSingleRecord(consumer, topic)

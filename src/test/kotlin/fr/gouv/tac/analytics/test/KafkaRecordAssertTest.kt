@@ -4,18 +4,16 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 class KafkaRecordAssertTest {
     private var exampleConsumerRecord: ConsumerRecord<String, JsonNode>? = null
 
     @BeforeEach
-    @Throws(IOException::class)
     fun setup() {
         val jsonValue = ObjectMapper().readTree("{\"name\": \"Robert\"}")
         exampleConsumerRecord = ConsumerRecord("topic-name", 0, 0, "key", jsonValue)
@@ -24,7 +22,7 @@ class KafkaRecordAssertTest {
 
     @Test
     fun can_detect_hasNoKey_mismatch() {
-        Assertions.assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoKey() } }
+        assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoKey() } }
             .hasMessage(
                 "[Kafka record shouldn't have a key] \n" +
                     "Expecting:\n <\"key\">\n" +
@@ -35,7 +33,7 @@ class KafkaRecordAssertTest {
 
     @Test
     fun can_detect_hasNoHeader_mismatch() {
-        Assertions.assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoHeader("TestHeader") } }
+        assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoHeader("TestHeader") } }
             .hasMessage(
                 "[Kafka record shouldn't have a 'TestHeader' header] \n" +
                     "Expecting empty but was:<[\"HeaderValue\"]>"
@@ -44,7 +42,7 @@ class KafkaRecordAssertTest {
 
     @Test
     fun can_detect_hasJsonValue_mismatch() {
-        Assertions.assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasJsonValue("name", "clea") } }
+        assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasJsonValue("name", "clea") } }
             .hasMessage(
                 "\nExpecting:\n  <\"Robert\">\n" +
                     "to satisfy:\n  <\"clea\">"
@@ -53,7 +51,7 @@ class KafkaRecordAssertTest {
 
     @Test
     fun can_detect_hasJsonValue_mismatch_with_matcher() {
-        Assertions.assertThatThrownBy {
+        assertThatThrownBy {
             exampleConsumerRecord?.let {
                 assertThat(it).hasJsonValue(
                     "name",

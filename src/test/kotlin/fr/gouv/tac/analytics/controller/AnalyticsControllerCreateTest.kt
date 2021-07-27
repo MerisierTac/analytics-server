@@ -8,26 +8,32 @@ import fr.gouv.tac.analytics.test.KafkaManager
 import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
 import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
-import org.hamcrest.Matchers
+import io.restassured.http.ContentType.JSON
+import org.hamcrest.Matchers.contains
+import org.hamcrest.Matchers.emptyString
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.nullValue
+import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.OK
 import java.time.OffsetDateTime
 import java.util.UUID
 
 @IntegrationTest
-internal class AnalyticsControllerCreateTest {
+class AnalyticsControllerCreateTest {
+
     @Test
     fun should_send_a_create_message_in_kafka() {
         val analyticsRequest = ExampleData.analyticsRequest()
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.OK.value())
-            .body(Matchers.emptyString())
+            .statusCode(OK.value())
+            .body(emptyString())
         assertThat(KafkaManager.getSingleRecord("dev.analytics.cmd.create"))
             .hasNoHeader("__TypeId__")
             .hasNoKey()
@@ -53,19 +59,19 @@ internal class AnalyticsControllerCreateTest {
         val analyticsRequest = ExampleData.analyticsRequest().copy(installationUuid = "")
 
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body("path", equalTo("/api/v1/analytics"))
             .body(
                 "errors",
-                Matchers.contains(
+                contains(
                     mapOf(
                         "field" to "installationUuid",
                         "code" to "Size",
@@ -114,16 +120,16 @@ internal class AnalyticsControllerCreateTest {
             }
             """
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsJsonRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body("errors", Matchers.nullValue())
+            .body("path", equalTo("/api/v1/analytics"))
+            .body("errors", nullValue())
     }
 
     @Test
@@ -144,19 +150,19 @@ internal class AnalyticsControllerCreateTest {
         )
 
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body("path", equalTo("/api/v1/analytics"))
             .body(
                 "errors",
-                Matchers.contains(
+                contains(
                     mapOf(
                         "field" to "events[0].name",
                         "code" to "Size",
@@ -204,16 +210,16 @@ internal class AnalyticsControllerCreateTest {
             }
             """
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsJsonRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body("errors", Matchers.nullValue())
+            .body("path", equalTo("/api/v1/analytics"))
+            .body("errors", nullValue())
     }
 
     @Test
@@ -223,7 +229,7 @@ internal class AnalyticsControllerCreateTest {
             "timestamp" to "2021-06-02T22:47:02.388 PMZ"
         )
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(
                 mapOf(
                     "installationUuid" to UUID.randomUUID(),
@@ -233,17 +239,17 @@ internal class AnalyticsControllerCreateTest {
             )
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
             .body(
                 "message",
-                Matchers.startsWith(
+                startsWith(
                     "JSON parse error: Cannot deserialize value of type `java.time.OffsetDateTime` from String \"2021-06-02T22:47:02.388 PMZ\""
                 )
             )
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body("path", equalTo("/api/v1/analytics"))
     }
 
     @Test
@@ -264,19 +270,19 @@ internal class AnalyticsControllerCreateTest {
         )
 
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
-            .body("message", Matchers.equalTo("Request body contains invalid attributes"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
+            .body("path", equalTo("/api/v1/analytics"))
             .body(
                 "errors",
-                Matchers.contains(
+                contains(
                     mapOf(
                         "field" to "errors[0].name",
                         "code" to "Size",
@@ -325,16 +331,16 @@ internal class AnalyticsControllerCreateTest {
             """
 
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsJsonRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body("errors", Matchers.nullValue())
+            .body("path", equalTo("/api/v1/analytics"))
+            .body("errors", nullValue())
     }
 
     @Test
@@ -377,15 +383,15 @@ internal class AnalyticsControllerCreateTest {
             """
 
         givenAuthenticated()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .contentType(JSON)
             .body(analyticsJsonRequest)
             .post("/api/v1/analytics")
             .then()
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .body("status", Matchers.equalTo(400))
-            .body("error", Matchers.equalTo("Bad Request"))
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
-            .body("path", Matchers.equalTo("/api/v1/analytics"))
-            .body("errors", Matchers.nullValue())
+            .body("path", equalTo("/api/v1/analytics"))
+            .body("errors", nullValue())
     }
 }

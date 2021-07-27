@@ -6,9 +6,9 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
 import io.restassured.RestAssured
-import io.restassured.http.ContentType
+import io.restassured.http.ContentType.JSON
 import io.restassured.specification.RequestSpecification
-import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpHeaders.ACCEPT_LANGUAGE
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
@@ -16,7 +16,7 @@ import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.NoSuchAlgorithmException
 import java.time.Instant
-import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.MINUTES
 import java.util.Base64
 import java.util.Date
 import java.util.Locale
@@ -24,18 +24,35 @@ import java.util.UUID
 
 class RestAssuredManager : TestExecutionListener {
     companion object {
-        private val JWT_KEY_PAIR: KeyPair?
+        private val JWT_KEY_PAIR: KeyPair
+
+        init {
+            // generate a JWT key pair and export system property to configure the test application
+            try {
+                JWT_KEY_PAIR = KeyPairGenerator.getInstance("RSA")
+                    .generateKeyPair()
+                val jwtPublicKey = Base64.getEncoder()
+                    .encodeToString(JWT_KEY_PAIR.public.encoded)
+                System.setProperty(
+                    "analytics.robert-jwt-analytics-public-key",
+                    jwtPublicKey
+                )
+            } catch (e: NoSuchAlgorithmException) {
+                throw RuntimeException(e)
+            }
+        }
+
         fun defaultJwtClaims(): JWTClaimsSet.Builder {
             return JWTClaimsSet.Builder()
                 .jwtID(UUID.randomUUID().toString())
                 .issueTime(Date.from(Instant.now()))
-                .expirationTime(Date.from(Instant.now().plus(2, ChronoUnit.MINUTES)))
+                .expirationTime(Date.from(Instant.now().plus(2, MINUTES)))
         }
 
         private fun givenBaseHeaders(): RequestSpecification {
             return RestAssured.given()
-                .accept(ContentType.JSON)
-                .header(HttpHeaders.ACCEPT_LANGUAGE, Locale.US)
+                .accept(JSON)
+                .header(ACCEPT_LANGUAGE, Locale.US)
         }
 
         fun givenAuthenticated(): RequestSpecification {
@@ -55,22 +72,6 @@ class RestAssuredManager : TestExecutionListener {
             val signedJWT = SignedJWT(header, claims.build())
             signedJWT.sign(RSASSASigner(JWT_KEY_PAIR!!.private))
             return signedJWT.serialize()
-        }
-
-        init {
-            // generate a JWT key pair and export system property to configure the test application
-            try {
-                JWT_KEY_PAIR = KeyPairGenerator.getInstance("RSA")
-                    .generateKeyPair()
-                val jwtPublicKey = Base64.getEncoder()
-                    .encodeToString(JWT_KEY_PAIR.public.encoded)
-                System.setProperty(
-                    "analytics.robert-jwt-analytics-public-key",
-                    jwtPublicKey
-                )
-            } catch (e: NoSuchAlgorithmException) {
-                throw RuntimeException(e)
-            }
         }
     }
 
