@@ -23,29 +23,39 @@ class KafkaRecordAssertTest {
     @Test
     fun can_detect_hasNoKey_mismatch() {
         assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoKey() } }
-            .hasMessage(
-                "[Kafka record shouldn't have a key] \n" +
-                    "Expecting:\n <\"key\">\n" +
-                    "to be equal to:\n <null>\n" +
-                    "but was not."
+            .hasMessageFindingMatch(
+                """
+                        \[Kafka record shouldn't have a key\] .*
+                        Expecting:.*
+                         <"key">.*
+                        to be equal to:.*
+                         <null>.*
+                        but was not\.
+                """.trimIndent()
             )
     }
 
     @Test
     fun can_detect_hasNoHeader_mismatch() {
         assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoHeader("TestHeader") } }
-            .hasMessage(
-                "[Kafka record shouldn't have a 'TestHeader' header] \n" +
-                    "Expecting empty but was:<[\"HeaderValue\"]>"
+            .hasMessageFindingMatch(
+                """
+                        [Kafka record shouldn't have a 'TestHeader' header] .*
+                        Expecting empty but was:<\["HeaderValue"\]>
+                """.trimIndent()
             )
     }
 
     @Test
     fun can_detect_hasJsonValue_mismatch() {
         assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasJsonValue("name", "clea") } }
-            .hasMessage(
-                "\nExpecting:\n  <\"Robert\">\n" +
-                    "to satisfy:\n  <\"clea\">"
+            .hasMessageFindingMatch(
+                """
+             Expecting:.*
+               <"Robert">.*
+             to satisfy:.*
+               <"clea">
+                """.trimIndent()
             )
     }
 
@@ -58,12 +68,13 @@ class KafkaRecordAssertTest {
                     Matchers.equalTo("clea")
                 )
             }
-        }
-            .hasMessage(
-                (
-                    "\nExpecting:\n  <\"Robert\">\n" +
-                        "to satisfy:\n  <\"clea\">"
-                    )
-            )
+        }.hasMessageFindingMatch(
+            """
+             Expecting:.*
+               <"Robert">.*
+             to satisfy:.*
+               <"clea">
+            """.trimIndent()
+        )
     }
 }
