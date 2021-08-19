@@ -8,10 +8,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm
 import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import java.security.KeyFactory
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
+import java.time.Duration
 import java.util.Base64
 
 @EnableWebSecurity
@@ -37,8 +39,12 @@ class WebSecurityConfiguration(val analyticsProperties: AnalyticsProperties) : W
         val keySpec: ByteArray = Base64.getMimeDecoder()
             .decode(analyticsProperties.robertJwtAnalyticsPublicKey)
         val publicKey = KeyFactory.getInstance("RSA").generatePublic(X509EncodedKeySpec(keySpec)) as RSAPublicKey
-        return NimbusJwtDecoder.withPublicKey(publicKey)
+        val jwtDecoder = NimbusJwtDecoder.withPublicKey(publicKey)
             .signatureAlgorithm(SignatureAlgorithm.RS256)
             .build()
+
+        jwtDecoder.setJwtValidator(JwtTimestampValidator(Duration.ZERO))
+
+        return jwtDecoder
     }
 }
