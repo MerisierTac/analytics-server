@@ -17,6 +17,7 @@ spring:
   output:
     ansi:
       enabled: always
+  kafka:
     bootstrap-servers: localhost:19092
 analytics:
   robert-jwt-analytics-public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMAMa2bW7k1SQrY+MtGbGvbeBj+4JB5hzCHXe+Amzc/yLUlAabO12uUwlBUD0JetGqNSgJKRlyDLmeyChXI3P88CAwEAAQ==
