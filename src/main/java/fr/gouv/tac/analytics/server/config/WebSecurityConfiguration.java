@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
 import java.security.KeyFactory;
@@ -14,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Duration;
 import java.util.Base64;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -48,8 +50,14 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .decode(analyticsProperties.getRobertJwtAnalyticsPublicKey());
         final var publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
                 .generatePublic(new X509EncodedKeySpec(keySpec));
-        return NimbusJwtDecoder.withPublicKey(publicKey)
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(publicKey)
                 .signatureAlgorithm(RS256)
                 .build();
+
+        // By default NimbusJwtDecoder use the JwtTimeStampValidator with its default clock skew
+        // (org.springframework.security.oauth2.jwt.JwtTimestampValidator.DEFAULT_MAX_CLOCK_SKEW)
+        jwtDecoder.setJwtValidator(new JwtTimestampValidator(Duration.ZERO));
+
+        return jwtDecoder;
     }
 }

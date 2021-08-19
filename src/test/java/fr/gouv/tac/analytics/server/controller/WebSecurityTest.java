@@ -1,5 +1,6 @@
 package fr.gouv.tac.analytics.server.controller;
 
+import com.nimbusds.jwt.JWTClaimsSet;
 import fr.gouv.tac.analytics.server.test.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import static fr.gouv.tac.analytics.server.test.RestAssuredManager.givenJwt;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
@@ -31,7 +33,7 @@ class WebSecurityTest {
     }
 
     @Test
-    void unauthorized_on_expired_token() {
+    void unauthorized_on_token_having_expires_date_before_issues_date() {
         final var expired = Date.from(Instant.now().minus(10, MINUTES));
         givenJwt(defaultJwtClaims().expirationTime(expired))
                 .contentType(JSON)
@@ -41,6 +43,24 @@ class WebSecurityTest {
                 .statusCode(UNAUTHORIZED.value())
                 .header(WWW_AUTHENTICATE, startsWith("Bearer error=\"invalid_token\", error_description=\"An error occurred while attempting to decode the Jwt: expiresAt must be after issuedAt\","));
     }
+
+
+    @Test
+    void unauthorized_on_expired_token() {
+
+        final var issueAt = Date.from(Instant.now().minus(10, MINUTES));
+        final var expired = Date.from(Instant.now().minus(1, SECONDS));
+        JWTClaimsSet.Builder jwtClaimsBuilder = defaultJwtClaims().expirationTime(expired).issueTime(issueAt);
+
+        givenJwt(jwtClaimsBuilder)
+                .contentType(JSON)
+                .post("/api/v1/analytics")
+
+                .then()
+                .statusCode(UNAUTHORIZED.value())
+                .header(WWW_AUTHENTICATE, startsWith("Bearer error=\"invalid_token\", error_description=\"An error occurred while attempting to decode the Jwt: Jwt expired at"));
+    }
+
 
     @Test
     void unauthorized_on_invalid_token_signature() {

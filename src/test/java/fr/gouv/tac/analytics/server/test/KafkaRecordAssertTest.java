@@ -29,9 +29,9 @@ public class KafkaRecordAssertTest {
         assertThatThrownBy(() ->
                 assertThat(exampleConsumerRecord).hasNoKey()
         )
-                .hasMessage("[Kafka record shouldn't have a key] \n" +
-                        "Expecting:\n <\"key\">\n" +
-                        "to be equal to:\n <null>\n" +
+                .hasMessageFindingMatch("[Kafka record shouldn't have a key] .*" +
+                        "Expecting:.* <\"key\">.*" +
+                        "to be equal to:.* <null>.*" +
                         "but was not.");
     }
 
@@ -40,25 +40,21 @@ public class KafkaRecordAssertTest {
         assertThatThrownBy(() ->
                 assertThat(exampleConsumerRecord).hasNoHeader("TestHeader")
         )
-                .hasMessage("[Kafka record shouldn't have a 'TestHeader' header] \n" +
-                        "Expecting empty but was:<[\"HeaderValue\"]>");
+                .hasMessageFindingMatch("\\[Kafka record shouldn't have a 'TestHeader' header\\] .*" +
+                        "Expecting empty but was:<\\[\"HeaderValue\"\\]>");
     }
 
     @Test
     void can_detect_hasJsonValue_mismatch() {
         assertThatThrownBy(() ->
                 assertThat(exampleConsumerRecord).hasJsonValue("name", "clea")
-        )
-                .hasMessage("\nExpecting:\n  <\"Robert\">\n"
-                        + "to satisfy:\n  <\"clea\">");
+        ).hasMessageFindingMatch(".*Expecting:.*<\"Robert\">.*to satisfy:.*<\"clea\">");
     }
 
     @Test
     void can_detect_hasJsonValue_mismatch_with_matcher() {
         assertThatThrownBy(() ->
                 assertThat(exampleConsumerRecord).hasJsonValue("name", equalTo("clea"))
-        )
-                .hasMessage("\nExpecting:\n  <\"Robert\">\n"
-                        + "to satisfy:\n  <\"clea\">");
+        ).hasMessageFindingMatch("Expecting:.*<\"Robert\">.*to satisfy:.*<\"clea\">");
     }
 }
