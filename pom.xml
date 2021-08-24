@@ -13,23 +13,18 @@
 
     <groupId>fr.gouv.tac</groupId>
     <artifactId>analytics-server</artifactId>
-    <version>1.1.0</version>
+    <version>0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
 
     <properties>
         <java.version>11</java.version>
-
-        <commons-lang3.version>3.11</commons-lang3.version>
-        <javax.inject.version>1</javax.inject.version>
-        <mapstruct.version>1.4.2.Final</mapstruct.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <kotlin.version>1.5.20</kotlin.version>
         <spring-cloud.version>2020.0.1</spring-cloud.version>
         <spring-kafka.version>2.6.6</spring-kafka.version>
-
-        <swagger-core-version>1.6.2</swagger-core-version>
+        <restassured.version>4.2.0</restassured.version>
+        <hamcrest-date.version>2.0.7</hamcrest-date.version>
+        <testcontainers.version>1.15.3</testcontainers.version>
     </properties>
-
 
     <dependencyManagement>
         <dependencies>
@@ -43,9 +38,7 @@
         </dependencies>
     </dependencyManagement>
 
-
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -57,6 +50,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -79,18 +76,6 @@
             <artifactId>spring-kafka</artifactId>
             <version>${spring-kafka.version}</version>
         </dependency>
-
-
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${javax.inject.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -101,46 +86,49 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
         </dependency>
 
-        <!-- Added to allow the building from intellij see https://youtrack.jetbrains.com/issue/IDEA-150621 -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok-mapstruct-binding</artifactId>
-            <version>${lombok-mapstruct-binding.version}</version>
-            <scope>provided</scope>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.1</version>
         </dependency>
-
-        <!-- Added to allow the building from intellij see https://youtrack.jetbrains.com/issue/IDEA-150621 -->
         <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>${mapstruct.version}</version>
-            <scope>provided</scope>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+        </dependency>
+        <!-- Bean Validation API support -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.diffplug.spotless/spotless-maven-plugin -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -150,32 +138,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka-test</artifactId>
-            <version>${spring-kafka.version}</version>
-        </dependency>
-
-        <!--Dependencies required for openapi generated sources -->
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>${swagger-core-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.1</version>
-        </dependency>
-        <!-- openapi-generator-maven-plugin 5.1.0 is not compatible with more recent versions
-        see : https://github.com/springfox/springfox/issues/3760 -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
+            <groupId>org.exparity</groupId>
+            <artifactId>hamcrest-date</artifactId>
+            <version>${hamcrest-date.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -188,63 +160,71 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${project.basedir}/src/main/doc/openapi-analytics-v1.yaml
+                                ${project.basedir}/src/main/resources/api-analytics-v1.yaml
                             </inputSpec>
-                            <generatorName>spring</generatorName>
-                            <apiPackage>fr.gouv.tac.analytics.server.api</apiPackage>
-                            <modelPackage>fr.gouv.tac.analytics.server.api.model</modelPackage>
+                            <generatorName>kotlin-spring</generatorName>
+                            <apiPackage>fr.gouv.tac.analytics.api</apiPackage>
+                            <modelPackage>fr.gouv.tac.analytics.api.model</modelPackage>
                             <configOptions>
+                                <sourceFolder>src/main/kotlin</sourceFolder>
                                 <interfaceOnly>true</interfaceOnly>
+                                <gradleBuildFile>false</gradleBuildFile>
                                 <useTags>true</useTags>
-                                <additionalModelTypeAnnotations>@lombok.Builder@lombok.AllArgsConstructor@lombok.NoArgsConstructor</additionalModelTypeAnnotations>
+                                <serializationLibrary>jackson</serializationLibrary>
+                                <exceptionHandler>false</exceptionHandler>
                             </configOptions>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.11.1</version>
+                <configuration>
+                    <kotlin>
+                        <!-- default config for now, as spotless does not support custom ktlin config yet -> see https://github.com/diffplug/spotless/issues/142-->
+                        <ktlint>
+                            <version>0.41.0</version>
+                        </ktlint>
+                    </kotlin>
+                </configuration>
                 <executions>
                     <execution>
+                        <phase>compile</phase>
                         <goals>
-                            <goal>build-info</goal>
+                            <goal>apply</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
                 <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>${lombok-mapstruct-binding.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <compilerArgs>
-                        <compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
-                        <compilerArg>-parameters</compilerArg>
-                    </compilerArgs>
+                    <args>
+                        <arg>-Xjsr305=strict</arg>
+                    </args>
+                    <compilerPlugins>
+                        <plugin>spring</plugin>
+                    </compilerPlugins>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-allopen</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>0.8.7</version>
                 <configuration>
                     <output>file</output>
                     <append>true</append>
@@ -266,7 +246,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 
