@@ -12,6 +12,7 @@ import io.restassured.http.ContentType.JSON
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.emptyString
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.nullValue
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.Test
@@ -52,6 +53,29 @@ class AnalyticsControllerCreateTest {
             .hasJsonValue("errors[1].name", "errorName2")
             .hasJsonValue("errors[1].timestamp", "2020-12-17T10:59:17.123Z")
             .hasJsonValue("errors[1].desc", "error2 description")
+    }
+
+    @Test
+    fun should_accept_null_events_and_error_list() {
+        val analyticsRequest = ExampleData.analyticsRequest()
+            .copy(events = null, errors = null)
+        givenAuthenticated()
+            .contentType(JSON)
+            .body(analyticsRequest)
+            .post("/api/v1/analytics")
+            .then()
+            .statusCode(OK.value())
+            .body(emptyString())
+        assertThat(KafkaManager.getSingleRecord("dev.analytics.cmd.create"))
+            .hasNoHeader("__TypeId__")
+            .hasNoKey()
+            .hasJsonValue("creationDate", isStringDateBetweenNowAndTenSecondsAgo())
+            .hasJsonValue("infos.os", "Android")
+            .hasJsonValue("infos.type", 0)
+            .hasJsonValue("infos.load", 1.03)
+            .hasJsonValue("infos.root", false)
+            .hasJsonValue("events", hasSize<TimestampedEvent>(0))
+            .hasJsonValue("errors", hasSize<TimestampedEvent>(0))
     }
 
     @Test

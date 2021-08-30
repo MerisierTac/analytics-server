@@ -6,9 +6,9 @@ import java.time.OffsetDateTime
 data class AnalyticsCreation(
     val installationUuid: String,
     val infos: Map<String, Any>?,
-    val events: List<AnalyticsEvent>?,
-    val errors: List<AnalyticsEvent>?,
-    val creationDate: OffsetDateTime? = OffsetDateTime.now()
+    val events: List<AnalyticsEvent>,
+    val errors: List<AnalyticsEvent>,
+    val creationDate: OffsetDateTime = OffsetDateTime.now()
 )
 
 data class AnalyticsEvent(
