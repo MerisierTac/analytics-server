@@ -17,7 +17,7 @@ class AnalyticsController(private val analyticsService: AnalyticsService) : Anal
         analyticsService.createAnalytics(
             AnalyticsCreation(
                 installationUuid = analyticsRequest!!.installationUuid,
-                infos = analyticsRequest.infos,
+                infos = analyticsRequest.infos.orEmpty(),
                 events = analyticsRequest.events
                     ?.map { AnalyticsEvent(it.name, it.timestamp, it.desc) }
                     .orEmpty(),
