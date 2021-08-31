@@ -9,6 +9,7 @@ import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
 import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
 import io.restassured.http.ContentType.JSON
+import org.hamcrest.Matchers.anEmptyMap
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.emptyString
 import org.hamcrest.Matchers.equalTo
@@ -56,9 +57,9 @@ class AnalyticsControllerCreateTest {
     }
 
     @Test
-    fun should_accept_null_events_and_error_list() {
+    fun should_accept_null_infos_events_and_error_list() {
         val analyticsRequest = ExampleData.analyticsRequest()
-            .copy(events = null, errors = null)
+            .copy(infos = null, events = null, errors = null)
         givenAuthenticated()
             .contentType(JSON)
             .body(analyticsRequest)
@@ -70,10 +71,7 @@ class AnalyticsControllerCreateTest {
             .hasNoHeader("__TypeId__")
             .hasNoKey()
             .hasJsonValue("creationDate", isStringDateBetweenNowAndTenSecondsAgo())
-            .hasJsonValue("infos.os", "Android")
-            .hasJsonValue("infos.type", 0)
-            .hasJsonValue("infos.load", 1.03)
-            .hasJsonValue("infos.root", false)
+            .hasJsonValue("infos", anEmptyMap<String, String>())
             .hasJsonValue("events", hasSize<TimestampedEvent>(0))
             .hasJsonValue("errors", hasSize<TimestampedEvent>(0))
     }
