@@ -277,6 +277,58 @@ class AnalyticsControllerCreateTest {
     }
 
     @Test
+    fun bad_request_on_null_event_timestamp() {
+        val timestamp = OffsetDateTime.parse("2020-12-17T10:59:17.123Z")
+
+        val analyticsJsonRequest = """
+            {
+                "installationUuid": "${UUID.randomUUID()}",
+                "infos": {
+                    "os": "Android",
+                    "type": 0,
+                    "load": 1.03,
+                    "root": false
+                },
+                "timestamp": "$timestamp",
+                "events": [
+                    {
+                        "name": "eventName1",
+                        "timestamp": null,
+                        "desc": "event1 description"
+                    },
+                    {
+                        "name": "eventName2",
+                        "timestamp": "$timestamp"
+                    }
+                ],
+                "errors": [
+                    {
+                        "name": "errorName1",
+                        "timestamp": "$timestamp"
+                    },
+                    {
+                        "name": "errorName2",
+                        "timestamp": "$timestamp",
+                        "desc": "error2 description"
+                    }
+                ]
+            }
+            """
+
+        givenAuthenticated()
+            .contentType(JSON)
+            .body(analyticsJsonRequest)
+            .post("/api/v1/analytics")
+            .then()
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
+            .body("path", equalTo("/api/v1/analytics"))
+            .body("errors", nullValue())
+    }
+
+    @Test
     fun bad_request_on_empty_error_name() {
         val timestamp = OffsetDateTime.parse("2020-12-17T10:59:17.123Z")
         val analyticsRequest = ExampleData.analyticsRequest().copy(
