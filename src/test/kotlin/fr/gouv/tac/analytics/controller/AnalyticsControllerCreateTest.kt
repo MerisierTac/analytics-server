@@ -9,9 +9,11 @@ import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
 import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
 import io.restassured.http.ContentType.JSON
+import org.hamcrest.Matchers.anEmptyMap
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.emptyString
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.nullValue
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.Test
@@ -52,6 +54,26 @@ class AnalyticsControllerCreateTest {
             .hasJsonValue("errors[1].name", "errorName2")
             .hasJsonValue("errors[1].timestamp", "2020-12-17T10:59:17.123Z")
             .hasJsonValue("errors[1].desc", "error2 description")
+    }
+
+    @Test
+    fun should_accept_null_infos_events_and_error_list() {
+        val analyticsRequest = ExampleData.analyticsRequest()
+            .copy(infos = null, events = null, errors = null)
+        givenAuthenticated()
+            .contentType(JSON)
+            .body(analyticsRequest)
+            .post("/api/v1/analytics")
+            .then()
+            .statusCode(OK.value())
+            .body(emptyString())
+        assertThat(KafkaManager.getSingleRecord("dev.analytics.cmd.create"))
+            .hasNoHeader("__TypeId__")
+            .hasNoKey()
+            .hasJsonValue("creationDate", isStringDateBetweenNowAndTenSecondsAgo())
+            .hasJsonValue("infos", anEmptyMap<String, String>())
+            .hasJsonValue("events", hasSize<TimestampedEvent>(0))
+            .hasJsonValue("errors", hasSize<TimestampedEvent>(0))
     }
 
     @Test
@@ -250,6 +272,58 @@ class AnalyticsControllerCreateTest {
             )
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
+    }
+
+    @Test
+    fun bad_request_on_null_event_timestamp() {
+        val timestamp = OffsetDateTime.parse("2020-12-17T10:59:17.123Z")
+
+        val analyticsJsonRequest = """
+            {
+                "installationUuid": "${UUID.randomUUID()}",
+                "infos": {
+                    "os": "Android",
+                    "type": 0,
+                    "load": 1.03,
+                    "root": false
+                },
+                "timestamp": "$timestamp",
+                "events": [
+                    {
+                        "name": "eventName1",
+                        "timestamp": null,
+                        "desc": "event1 description"
+                    },
+                    {
+                        "name": "eventName2",
+                        "timestamp": "$timestamp"
+                    }
+                ],
+                "errors": [
+                    {
+                        "name": "errorName1",
+                        "timestamp": "$timestamp"
+                    },
+                    {
+                        "name": "errorName2",
+                        "timestamp": "$timestamp",
+                        "desc": "error2 description"
+                    }
+                ]
+            }
+            """
+
+        givenAuthenticated()
+            .contentType(JSON)
+            .body(analyticsJsonRequest)
+            .post("/api/v1/analytics")
+            .then()
+            .statusCode(BAD_REQUEST.value())
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
+            .body("path", equalTo("/api/v1/analytics"))
+            .body("errors", nullValue())
     }
 
     @Test
