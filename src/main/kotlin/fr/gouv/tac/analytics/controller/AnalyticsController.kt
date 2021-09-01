@@ -17,9 +17,13 @@ class AnalyticsController(private val analyticsService: AnalyticsService) : Anal
         analyticsService.createAnalytics(
             AnalyticsCreation(
                 installationUuid = analyticsRequest!!.installationUuid,
-                infos = analyticsRequest.infos,
-                events = analyticsRequest.events.map { AnalyticsEvent(it.name, it.timestamp, it.desc) },
-                errors = analyticsRequest.errors.map { AnalyticsEvent(it.name, it.timestamp, it.desc) }
+                infos = analyticsRequest.infos.orEmpty(),
+                events = analyticsRequest.events
+                    ?.map { AnalyticsEvent(it.name, it.timestamp, it.desc) }
+                    .orEmpty(),
+                errors = analyticsRequest.errors
+                    ?.map { AnalyticsEvent(it.name, it.timestamp, it.desc) }
+                    .orEmpty()
             )
         )
         return ResponseEntity.ok().build()
