@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   title: "tac analytics"
   description: "#TOUS-ANTI-COVID, analytics API"
-  version: 1.1.0
+  version: 1.2.0
   termsOfService: https://gitlab.inria.fr/stopcovid19/analytics-server
   contact:
     email: stopcovid@inria.fr
@@ -155,9 +155,6 @@ components:
             The errors list of the analytics.
       required:
         - installationUuid
-        - infos
-        - events
-        - errors
 
     Information:
       type: object
@@ -176,11 +173,9 @@ components:
         timestamp:
           type: string
           format: date-time
-          nullable: false
           description: The BasicInfo timestamp. Date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
         desc:
           type: string
-          nullable: false
           description: the basic info description
       required:
         - name
