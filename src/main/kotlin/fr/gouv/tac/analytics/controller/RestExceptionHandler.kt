@@ -28,7 +28,6 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
         status: HttpStatus,
         request: WebRequest
     ): ResponseEntity<Any> {
-        val message = "Request body contains invalid attributes"
         val fieldErrors =
             ex.fieldErrors.map { ErrorResponseErrors(it.field, it.code, it.defaultMessage) }
         val globalErrors =
@@ -36,12 +35,12 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
         val errorResponseBody = ErrorResponse(
             status = BAD_REQUEST.value(),
             error = BAD_REQUEST.reasonPhrase,
-            message = message,
+            message = "Request body contains invalid attributes",
             timestamp = now(),
             path = servletRequest.requestURI,
             errors = fieldErrors + globalErrors
         )
-        log.warn("$message $fieldErrors $globalErrors")
+        log.warn("${errorResponseBody.message} $fieldErrors $globalErrors")
         return ResponseEntity(errorResponseBody, BAD_REQUEST)
     }
 
@@ -51,7 +50,6 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
 
-        val message = "Request body contains invalid attributes"
         val errors = ex.constraintViolations.map {
             ErrorResponseErrors(
                 field = it.propertyPath.toString(),
@@ -63,12 +61,12 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
         val errorResponseBody = ErrorResponse(
             status = BAD_REQUEST.value(),
             error = BAD_REQUEST.reasonPhrase,
-            message = message,
+            message = "Request body contains invalid attributes",
             timestamp = now(),
             path = request.requestURI,
             errors = errors
         )
-        log.warn("$message $errors")
+        log.warn("${errorResponseBody.message} $errors")
         return ResponseEntity(errorResponseBody, BAD_REQUEST)
     }
 
