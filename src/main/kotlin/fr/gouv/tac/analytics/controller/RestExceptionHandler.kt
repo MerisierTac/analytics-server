@@ -2,6 +2,7 @@ package fr.gouv.tac.analytics.controller
 
 import fr.gouv.tac.analytics.api.model.ErrorResponse
 import fr.gouv.tac.analytics.api.model.ErrorResponseErrors
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -18,6 +19,8 @@ import javax.validation.ConstraintViolationException
 
 @RestControllerAdvice(annotations = [Controller::class])
 class RestExceptionHandler(private val servletRequest: HttpServletRequest) : ResponseEntityExceptionHandler() {
+
+    private val log = LoggerFactory.getLogger(RestExceptionHandler::class.java)
 
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,
@@ -37,6 +40,7 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
             path = servletRequest.requestURI,
             errors = fieldErrors + globalErrors
         )
+        log.warn("${errorResponseBody.message} $fieldErrors $globalErrors")
         return ResponseEntity(errorResponseBody, BAD_REQUEST)
     }
 
@@ -62,6 +66,7 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
             path = request.requestURI,
             errors = errors
         )
+        log.warn("${errorResponseBody.message} $errors")
         return ResponseEntity(errorResponseBody, BAD_REQUEST)
     }
 
@@ -80,6 +85,13 @@ class RestExceptionHandler(private val servletRequest: HttpServletRequest) : Res
             timestamp = now(),
             path = servletRequest.requestURI
         )
+
+        if (status.is5xxServerError) {
+            log.error(ex.message)
+        } else {
+            log.warn(ex.message)
+        }
+
         return ResponseEntity(errorResponseBody, status)
     }
 }
