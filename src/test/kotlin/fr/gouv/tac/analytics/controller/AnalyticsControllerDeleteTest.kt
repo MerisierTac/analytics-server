@@ -74,7 +74,7 @@ class AnalyticsControllerDeleteTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
-            .body("message", equalTo("Required String parameter 'installationUuid' is not present"))
+            .body("message", equalTo("Required request parameter 'installationUuid' for method parameter type String is not present"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
     }
