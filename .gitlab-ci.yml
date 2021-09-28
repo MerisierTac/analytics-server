@@ -18,10 +18,11 @@ build:
   image: maven:3.6.3-adoptopenjdk-11
   stage: build
   script:
-    - mvn -B -s .mvn/settings-ci.xml -ntp spotless:check deploy
+    - mvn -B -s .mvn/settings-ci.xml -ntp spotless:check dependency-check:check deploy
   artifacts:
     paths:
       - target/analytics-server*.jar
+      - target/dependency-check-report.html
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
