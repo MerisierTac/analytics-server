@@ -70,7 +70,7 @@ class RestAssuredManager : TestExecutionListener {
         private fun generateToken(claims: JWTClaimsSet.Builder): String {
             val header = JWSHeader.Builder(JWSAlgorithm.RS256).build()
             val signedJWT = SignedJWT(header, claims.build())
-            signedJWT.sign(RSASSASigner(JWT_KEY_PAIR!!.private))
+            signedJWT.sign(RSASSASigner(JWT_KEY_PAIR.private))
             return signedJWT.serialize()
         }
     }
