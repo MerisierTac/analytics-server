@@ -23,7 +23,7 @@
         <spring-kafka.version>2.6.6</spring-kafka.version>
         <restassured.version>4.2.0</restassured.version>
         <hamcrest-date.version>2.0.7</hamcrest-date.version>
-        <testcontainers.version>1.15.3</testcontainers.version>
+        <testcontainers.version>1.16.2</testcontainers.version>
     </properties>
 
     <dependencyManagement>
