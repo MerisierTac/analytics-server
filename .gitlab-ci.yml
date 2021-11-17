@@ -1,3 +1,15 @@
 include:
   - project: stopcovid19/accueil
+    ref: master
     file: gitlab/gitlab-ci-java-template.yml
+
+deploy-int:
+  stage: deploy
+  variables:
+    APP_VERSION: develop-SNAPSHOT
+  trigger:
+    project: stemcovid19/infrastructure/functional-zone/services/analytics/analytics-ansible
+    branch: dev
+    strategy: depend
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
