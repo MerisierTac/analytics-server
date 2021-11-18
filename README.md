@@ -120,6 +120,10 @@ Il vous est alors possible de :
 * modifier le payload pour générer un nouveau token
 * lire le contenu d'un token
 
+## Workflow général
+
+![](src/main/doc/analytics-pipelines.png)
+
 ## Messages envoyés dans Kafka
 
 Les messages sont envoyés dans les topics suivant :
@@ -204,10 +208,6 @@ Requête ES :
 * health-mobapp-*/_delete_by_query
 * event-mobapp-*/_delete_by_query
 * error-mobapp-*/_delete_by_query
-
-## Workflow général
-
-![](src/main/doc/analytics-pipelines.png)
 
 ## Statistiques remontées
 
