@@ -142,7 +142,7 @@ Format des objets :
       val deletionTimestamp: Instant
     )
 
-Evenement lié à l'analytic :
+Structure des événements lié à l'analytic :
 
     data class AnalyticsEvent(
       val name: String,
@@ -152,7 +152,7 @@ Evenement lié à l'analytic :
 
 ## Consommation du topic par Logstash
 
-Il existe 4 pipelines logstash consommant les topics kafka
+Il existe 4 pipelines logstash consommant les topics kafka :
 
 [analytics](https://gitlab.inria.fr/stemcovid19/infrastructure/functional-zone/services/analytics/elk-ansible/-/blob/master/roles/logstash/files/mobapp.conf)
 [delete](https://gitlab.inria.fr/stemcovid19/infrastructure/functional-zone/services/analytics/elk-ansible/-/blob/master/roles/logstash/files/deletekafka.conf)
@@ -161,13 +161,13 @@ Il existe 4 pipelines logstash consommant les topics kafka
 
 Chaque pipeline définit les étapes suivantes :
 
-* input: branchement au topic source pour la lecture des messages (kafka de l'instance analytics)
+* **input**: branchement au topic source pour la lecture des messages (kafka de l'instance analytics)
 
-* filter: applique des transformations sur les entités, notamment un filtrage selon le type d'analytic :
+* **filter**: applique des transformations sur les entités, notamment un filtrage selon le type d'analytic :
   * statistiques application mobile => type 0
   * statistiques sanitaire => type 1
 
-* output => branchement sur l'indexe cible du cluster ElasticSearch définit
+* **output** : branchement sur l'indexe cible du cluster ElasticSearch définit
 
 Pour les analytics issues du topic de creation, les 3 pipelines analytics, event et error sont déclenchés :
 
@@ -178,7 +178,7 @@ Pour les analytics issues du topic de creation, les 3 pipelines analytics, event
   * sinon on envoie dans l'indexe mobapp-%{+YYYY.MM.dd}
   * dans les deux cas, on supprime la date de création du message pour la mapper sur le champ @timestamp géré par ES.
 
-Si des données existent dans "events" ou "errors", les mêmes transformations s'appliquent et ils sont respectivements
+Si des données existent dans "events" ou "errors", les mêmes transformations s'appliquent et sont respectivements
 envoyés vers event-mobapp-%{+YYYY.MM.dd} et error-mobapp-%{+YYYY.MM.dd}
 
 Pour les analytics issues du topic de suppression :
@@ -186,15 +186,13 @@ Pour les analytics issues du topic de suppression :
 * on consomme le message dans kafka
 * on supprime tous les documents dans tous les indexes matchant l'installationUuid
 
-    {
-      "query": {
-        "term": {
-          "installationUuid":"%{[installationUuid]}"
-        }
-      }
-    }
+  {
+  "query": {
+  "term": {
+  "installationUuid":"%{[installationUuid]}"
+  } } }
 
-* mobapp-*/_delete_by_query
-* health-mobapp-*/_delete_by_query
-* event-mobapp-*/_delete_by_query
-* error-mobapp-*/_delete_by_query
+  * mobapp-*/_delete_by_query
+  * health-mobapp-*/_delete_by_query
+  * event-mobapp-*/_delete_by_query
+  * error-mobapp-*/_delete_by_query
