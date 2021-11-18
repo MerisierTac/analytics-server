@@ -203,6 +203,10 @@ Pour les analytics issues du topic de suppression :
 * event-mobapp-*/_delete_by_query
 * error-mobapp-*/_delete_by_query
 
+## Workflow général
+
+![](src/main/doc/analytics-pipelines.png)
+
 ## Statistiques remontées
 
 ### Applicatifs (analytics)
