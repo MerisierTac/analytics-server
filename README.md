@@ -31,10 +31,10 @@ sont ensuite analysés grâce à un kibana.
 
 note : le fichier source du diagramme est fourni [ici](analytics.drawio)
 
-## contrat d'interface
+## Contrat d'interface
 
-le contrat d'interface du service rest exposé est disponible au format
-openapi [openapi-analytics.yaml](src/main/doc/openapi-analytics.yaml)
+Le contrat d'interface du service rest exposé est disponible au format
+openapi [openapi-analytics.yaml](src/main/resources/openapi-analytics-v1.yml)
 
 ## Configuration Kafka SSL
 Ce chapitre explique comment configurer une connexion sécurisée SSL entre le producteur de message (notre application) et le server kafka.
@@ -115,6 +115,86 @@ Il faut la formatter de la façon suivante avant de la copier dans le champ pré
       <...>
     -----END RSA PRIVATE KEY----
 
-Il vous est alors possible de : 
+Il vous est alors possible de :
+
 * modifier le payload pour générer un nouveau token
 * lire le contenu d'un token
+
+## Messages envoyés dans Kafka
+
+Les messages sont envoyés dans les topics suivant :
+
+* analytics.creation-topic
+* analytics.deletion-topic
+
+Format des objets :
+
+    data class AnalyticsCreation(
+      val installationUuid: String,
+      val infos: Map<String, Any>,
+      val events: List<AnalyticsEvent>,
+      val errors: List<AnalyticsEvent>,
+      val creationDate: OffsetDateTime = OffsetDateTime.now()
+    )
+
+    data class AnalyticsDeletion(
+      val installationUuid: String,
+      val deletionTimestamp: Instant
+    )
+
+Evenement lié à l'analytic :
+
+    data class AnalyticsEvent(
+      val name: String,
+      val timestamp: OffsetDateTime,
+      val desc: String?
+    )
+
+## Consommation du topic par Logstash
+
+Il existe 4 pipelines logstash consommant les topics kafka
+
+[analytics](https://gitlab.inria.fr/stemcovid19/infrastructure/functional-zone/services/analytics/elk-ansible/-/blob/master/roles/logstash/files/mobapp.conf)
+[delete](https://gitlab.inria.fr/stemcovid19/infrastructure/functional-zone/services/analytics/elk-ansible/-/blob/master/roles/logstash/files/deletekafka.conf)
+[event](https://gitlab.inria.fr/stemcovid19/infrastructure/functional-zone/services/analytics/elk-ansible/-/blob/master/roles/logstash/files/event.conf)
+[error](https://gitlab.inria.fr/stemcovid19/infrastructure/functional-zone/services/analytics/elk-ansible/-/blob/master/roles/logstash/files/mobapp.conf)
+
+Chaque pipeline définit les étapes suivantes :
+
+* input: branchement au topic source pour la lecture des messages (kafka de l'instance analytics)
+
+* filter: applique des transformations sur les entités, notamment un filtrage selon le type d'analytic :
+  * statistiques application mobile => type 0
+  * statistiques sanitaire => type 1
+
+* output => branchement sur l'indexe cible du cluster ElasticSearch définit
+
+Pour les analytics issues du topic de creation, les 3 pipelines analytics, event et error sont déclenchés :
+
+* on consomme le message de kafka
+* on filtre sur le type 1 ou 0
+  * si type 1 (donnée sanitaire), on rejète le message si plus vieux de 7776000s (3 mois)
+    et on envoie dans l'indexe health-mobapp-%{+YYYY.MM.dd}
+  * sinon on envoie dans l'indexe mobapp-%{+YYYY.MM.dd}
+  * dans les deux cas, on supprime la date de création du message pour la mapper sur le champ @timestamp géré par ES.
+
+Si des données existent dans "events" ou "errors", les mêmes transformations s'appliquent et ils sont respectivements
+envoyés vers event-mobapp-%{+YYYY.MM.dd} et error-mobapp-%{+YYYY.MM.dd}
+
+Pour les analytics issues du topic de suppression :
+
+* on consomme le message dans kafka
+* on supprime tous les documents dans tous les indexes matchant l'installationUuid
+
+    {
+      "query": {
+        "term": {
+          "installationUuid":"%{[installationUuid]}"
+        }
+      }
+    }
+
+* mobapp-*/_delete_by_query
+* health-mobapp-*/_delete_by_query
+* event-mobapp-*/_delete_by_query
+* error-mobapp-*/_delete_by_query
