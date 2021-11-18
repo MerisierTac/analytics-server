@@ -179,7 +179,8 @@ Pour les analytics issues du topic de creation, les 3 pipelines analytics, event
   * si type 1 (donnée sanitaire), on rejète le message si plus vieux de 7776000s (3 mois)
     et on envoie dans l'indexe **health-mobapp-%{+YYYY.MM.dd}**
   * sinon on envoie dans l'indexe **mobapp-%{+YYYY.MM.dd}**
-  * dans les deux cas, on supprime la date de création du message pour la mapper sur le champ @timestamp géré par ES.
+  * dans les deux cas, on supprime la date de création du message pour la mapper sur le champ @timestamp géré par ES 
+et formatage des champs métiers.
 
 Si des données existent dans "events" ou "errors", les mêmes transformations s'appliquent et sont respectivements
 envoyés vers **event-mobapp-%{+YYYY.MM.dd}** et **error-mobapp-%{+YYYY.MM.dd}**
@@ -189,6 +190,7 @@ Pour les analytics issues du topic de suppression :
 * on consomme le message dans kafka
 * on supprime tous les documents dans tous les indexes matchant l'installationUuid
 
+Requête ES :
 
     {
       "query": {
