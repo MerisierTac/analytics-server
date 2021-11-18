@@ -189,6 +189,7 @@ Pour les analytics issues du topic de suppression :
 * on consomme le message dans kafka
 * on supprime tous les documents dans tous les indexes matchant l'installationUuid
 
+
     {
       "query": {
         "term": {
