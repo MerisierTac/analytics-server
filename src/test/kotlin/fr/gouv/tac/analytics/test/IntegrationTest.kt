@@ -12,7 +12,7 @@ import kotlin.annotation.AnnotationTarget.CLASS
 @ActiveProfiles("dev")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @TestExecutionListeners(
-    listeners = [RestAssuredManager::class, KafkaManager::class],
+    listeners = [RestAssuredManager::class, KafkaManager::class, LogbackManager::class],
     mergeMode = MERGE_WITH_DEFAULTS
 )
 @Retention(RUNTIME)

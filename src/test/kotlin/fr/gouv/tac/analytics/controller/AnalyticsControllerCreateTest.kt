@@ -6,15 +6,15 @@ import fr.gouv.tac.analytics.test.ExampleData
 import fr.gouv.tac.analytics.test.IntegrationTest
 import fr.gouv.tac.analytics.test.KafkaManager
 import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
+import fr.gouv.tac.analytics.test.LogbackManager.Companion.assertThatInfoLogs
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
 import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
 import io.restassured.http.ContentType.JSON
+import org.assertj.core.api.HamcrestCondition
 import org.hamcrest.Matchers.anEmptyMap
-import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.emptyString
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasSize
-import org.hamcrest.Matchers.nullValue
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -91,16 +91,12 @@ class AnalyticsControllerCreateTest {
             .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body(
-                "errors",
-                contains(
-                    mapOf(
-                        "field" to "installationUuid",
-                        "code" to "Size",
-                        "message" to "size must be between 1 and 64"
-                    )
-                )
-            )
+            .body("errors[0].field", equalTo("installationUuid"))
+            .body("errors[0].code", equalTo("Size"))
+            .body("errors[0].message", equalTo("size must be between 1 and 64"))
+
+        assertThatInfoLogs()
+            .contains("Validation error on POST /api/v1/analytics: 'installationUuid' size must be between 1 and 64")
     }
 
     @Test
@@ -149,9 +145,15 @@ class AnalyticsControllerCreateTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body("errors", nullValue())
+            .body("errors[0].field", equalTo("installationUuid"))
+            .body("errors[0].code", equalTo("HttpMessageNotReadable"))
+            .body("errors[0].message", startsWith("Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.AnalyticsRequest] value failed for JSON property installationUuid due to missing (therefore NULL) value for creator parameter installationUuid which is a non-nullable type"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'installationUuid' Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.AnalyticsRequest] value failed for JSON property installationUuid due to missing (therefore NULL) value for creator parameter installationUuid which is a non-nullable type")))
     }
 
     @Test
@@ -182,16 +184,12 @@ class AnalyticsControllerCreateTest {
             .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body(
-                "errors",
-                contains(
-                    mapOf(
-                        "field" to "events[0].name",
-                        "code" to "Size",
-                        "message" to "size must be between 1 and ${Integer.MAX_VALUE}"
-                    )
-                )
-            )
+            .body("errors[0].field", equalTo("events[0].name"))
+            .body("errors[0].code", equalTo("Size"))
+            .body("errors[0].message", startsWith("size must be between 1 and ${Integer.MAX_VALUE}"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'events[0].name' size must be between 1 and ${Integer.MAX_VALUE}")))
     }
 
     @Test
@@ -239,9 +237,15 @@ class AnalyticsControllerCreateTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body("errors", nullValue())
+            .body("errors[0].field", equalTo("events[0].name"))
+            .body("errors[0].code", equalTo("HttpMessageNotReadable"))
+            .body("errors[0].message", startsWith("Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'events[0].name' Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type")))
     }
 
     @Test
@@ -264,14 +268,15 @@ class AnalyticsControllerCreateTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
-            .body(
-                "message",
-                startsWith(
-                    "JSON parse error: Cannot deserialize value of type `java.time.OffsetDateTime` from String \"2021-06-02T22:47:02.388 PMZ\""
-                )
-            )
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
+            .body("errors[0].field", equalTo("events[0].timestamp"))
+            .body("errors[0].code", equalTo("HttpMessageNotReadable"))
+            .body("errors[0].message", equalTo("Text '2021-06-02T22:47:02.388 PMZ' could not be parsed at index 23"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'events[0].timestamp' Text '2021-06-02T22:47:02.388 PMZ' could not be parsed at index 23")))
     }
 
     @Test
@@ -321,9 +326,15 @@ class AnalyticsControllerCreateTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body("errors", nullValue())
+            .body("errors[0].field", equalTo("events[0].timestamp"))
+            .body("errors[0].code", equalTo("HttpMessageNotReadable"))
+            .body("errors[0].message", startsWith("Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property timestamp due to missing (therefore NULL) value for creator parameter timestamp which is a non-nullable type"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'events[0].timestamp' Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property timestamp due to missing (therefore NULL) value for creator parameter timestamp which is a non-nullable type")))
     }
 
     @Test
@@ -354,16 +365,12 @@ class AnalyticsControllerCreateTest {
             .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body(
-                "errors",
-                contains(
-                    mapOf(
-                        "field" to "errors[0].name",
-                        "code" to "Size",
-                        "message" to "size must be between 1 and ${Integer.MAX_VALUE}"
-                    )
-                )
-            )
+            .body("errors[0].field", equalTo("errors[0].name"))
+            .body("errors[0].code", equalTo("Size"))
+            .body("errors[0].message", equalTo("size must be between 1 and ${Integer.MAX_VALUE}"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'errors[0].name' size must be between 1 and ${Integer.MAX_VALUE}")))
     }
 
     @Test
@@ -412,9 +419,15 @@ class AnalyticsControllerCreateTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body("errors", nullValue())
+            .body("errors[0].field", equalTo("errors[0].name"))
+            .body("errors[0].code", equalTo("HttpMessageNotReadable"))
+            .body("errors[0].message", startsWith("Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'errors[0].name' Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property name due to missing (therefore NULL) value for creator parameter name which is a non-nullable type")))
     }
 
     @Test
@@ -464,8 +477,14 @@ class AnalyticsControllerCreateTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Request body contains invalid attributes"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
-            .body("errors", nullValue())
+            .body("errors[0].field", equalTo("errors[0].timestamp"))
+            .body("errors[0].code", equalTo("HttpMessageNotReadable"))
+            .body("errors[0].message", startsWith("Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property timestamp due to missing (therefore NULL) value for creator parameter timestamp which is a non-nullable type"))
+
+        assertThatInfoLogs()
+            .areExactly(1, HamcrestCondition(startsWith("Validation error on POST /api/v1/analytics: 'errors[0].timestamp' Instantiation of [simple type, class fr.gouv.tac.analytics.api.model.TimestampedEvent] value failed for JSON property timestamp due to missing (therefore NULL) value for creator parameter timestamp which is a non-nullable type")))
     }
 }
