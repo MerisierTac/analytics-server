@@ -21,7 +21,7 @@ class KafkaConfiguration(
         val jsonSerializer = JsonSerializer<Any>(objectMapper)
         jsonSerializer.isAddTypeInfo = false
         return DefaultKafkaProducerFactory(
-            kafkaProperties.buildConsumerProperties(),
+            kafkaProperties.buildProducerProperties(),
             StringSerializer(),
             jsonSerializer
         )
