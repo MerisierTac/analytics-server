@@ -16,5 +16,6 @@
     <root level="WARN">
         <appender-ref ref="CONSOLE"/>
     </root>
+    <logger name="fr.gouv" level="INFO" />
 
 </configuration>
