@@ -1,11 +1,13 @@
 package fr.gouv.tac.analytics.test
 
-import org.exparity.hamcrest.date.ZonedDateTimeMatchers
+import org.exparity.hamcrest.date.ZonedDateTimeMatchers.sameOrAfter
+import org.exparity.hamcrest.date.ZonedDateTimeMatchers.sameOrBefore
 import org.hamcrest.Description
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.allOf
 import org.hamcrest.TypeSafeMatcher
 import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 
 object TemporalMatchers {
     /**
@@ -27,8 +29,11 @@ object TemporalMatchers {
     /**
      * Hamcrest matcher to verify a [ZonedDateTime] is between now and 10 seconds ago.
      */
-    private fun isBetweenNowAndTenSecondsAgo(): Matcher<ZonedDateTime> = Matchers.allOf(
-        ZonedDateTimeMatchers.sameOrAfter(ZonedDateTime.now().minusSeconds(10)),
-        ZonedDateTimeMatchers.sameOrBefore(ZonedDateTime.now())
-    )
+    private fun isBetweenNowAndTenSecondsAgo(): Matcher<ZonedDateTime> {
+        val now = now()
+        return allOf(
+            sameOrAfter(now.minusSeconds(10)),
+            sameOrBefore(now)
+        )
+    }
 }
