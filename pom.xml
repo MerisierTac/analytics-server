@@ -22,7 +22,7 @@
         <spring-cloud.version>2020.0.3</spring-cloud.version>
         <spring-kafka.version>2.6.6</spring-kafka.version>
         <restassured.version>4.2.0</restassured.version>
-        <hamcrest-date.version>2.0.7</hamcrest-date.version>
+        <hamcrest-date.version>2.0.8</hamcrest-date.version>
         <testcontainers.version>1.16.2</testcontainers.version>
         <log4j2.version>2.17.0</log4j2.version>
     </properties>
