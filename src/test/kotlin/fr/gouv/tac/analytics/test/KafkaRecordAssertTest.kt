@@ -26,11 +26,8 @@ class KafkaRecordAssertTest {
             .hasMessageFindingMatch(
                 """
                         \[Kafka record shouldn't have a key\] .*
-                        Expecting:.*
-                         <"key">.*
-                        to be equal to:.*
-                         <null>.*
-                        but was not\.
+                        expected: null.*
+                        but was : "key".*
                 """.trimIndent()
             )
     }
@@ -40,8 +37,8 @@ class KafkaRecordAssertTest {
         assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoHeader("TestHeader") } }
             .hasMessageFindingMatch(
                 """
-                        [Kafka record shouldn't have a 'TestHeader' header] .*
-                        Expecting empty but was:<\["HeaderValue"\]>
+                        \[Kafka record shouldn't have a 'TestHeader' header\] .*
+                        Expecting empty but was: \["HeaderValue"\]
                 """.trimIndent()
             )
     }
@@ -52,9 +49,9 @@ class KafkaRecordAssertTest {
             .hasMessageFindingMatch(
                 """
              Expecting:.*
-               <"Robert">.*
+               "Robert".*
              to satisfy:.*
-               <"clea">
+               "clea"
                 """.trimIndent()
             )
     }
@@ -71,9 +68,9 @@ class KafkaRecordAssertTest {
         }.hasMessageFindingMatch(
             """
              Expecting:.*
-               <"Robert">.*
+               "Robert".*
              to satisfy:.*
-               <"clea">
+               "clea"
             """.trimIndent()
         )
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import fr.gouv.tac.analytics.test.IntegrationTest
 import fr.gouv.tac.analytics.test.KafkaManager
 import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
+import fr.gouv.tac.analytics.test.LogbackManager.Companion.assertThatInfoLogs
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenAuthenticated
 import fr.gouv.tac.analytics.test.TemporalMatchers.isStringDateBetweenNowAndTenSecondsAgo
 import io.restassured.http.ContentType.JSON
@@ -13,6 +14,7 @@ import org.assertj.core.api.HamcrestCondition
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.emptyString
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NO_CONTENT
@@ -74,9 +76,13 @@ class AnalyticsControllerDeleteTest {
             .statusCode(BAD_REQUEST.value())
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
-            .body("message", equalTo("Required String parameter 'installationUuid' is not present"))
+            .body("message", equalTo("Required request parameter 'installationUuid' for method parameter type String is not present"))
             .body("timestamp", isStringDateBetweenNowAndTenSecondsAgo())
             .body("path", equalTo("/api/v1/analytics"))
+            .body("errors", nullValue())
+
+        assertThatInfoLogs()
+            .contains("Client side error on DELETE /api/v1/analytics: Required request parameter 'installationUuid' for method parameter type String is not present")
     }
 
     @Test
@@ -101,6 +107,9 @@ class AnalyticsControllerDeleteTest {
                     )
                 )
             )
+
+        assertThatInfoLogs()
+            .contains("Validation error on DELETE /api/v1/analytics: 'deleteAnalytics.installationUuid' size must be between 1 and 64")
     }
 
     @Test
@@ -128,5 +137,8 @@ class AnalyticsControllerDeleteTest {
                     )
                 )
             )
+
+        assertThatInfoLogs()
+            .contains("Validation error on DELETE /api/v1/analytics: 'deleteAnalytics.installationUuid' size must be between 1 and 64")
     }
 }

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "ignoreDeps": [
+    "docker.elastic.co/elasticsearch/elasticsearch",
+    "docker.elastic.co/kibana/kibana",
+    "docker.elastic.co/logstash/logstash",
+    "wurstmeister/kafka",
+    "wurstmeister/zookeeper"
+  ]
+}
