@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.5.6</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>fr.gouv.tac</groupId>
@@ -148,7 +150,9 @@
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <testSourceDirectory>
+            ${project.basedir}/src/test/kotlin
+        </testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.openapitools</groupId>
@@ -165,13 +169,17 @@
                             </inputSpec>
                             <generatorName>kotlin-spring</generatorName>
                             <apiPackage>fr.gouv.tac.analytics.api</apiPackage>
-                            <modelPackage>fr.gouv.tac.analytics.api.model</modelPackage>
+                            <modelPackage>
+                                fr.gouv.tac.analytics.api.model
+                            </modelPackage>
                             <configOptions>
                                 <sourceFolder>src/main/kotlin</sourceFolder>
                                 <interfaceOnly>true</interfaceOnly>
                                 <gradleBuildFile>false</gradleBuildFile>
                                 <useTags>true</useTags>
-                                <serializationLibrary>jackson</serializationLibrary>
+                                <serializationLibrary>
+                                    jackson
+                                </serializationLibrary>
                                 <exceptionHandler>false</exceptionHandler>
                             </configOptions>
                         </configuration>
@@ -261,16 +269,19 @@
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.inria.fr/api/v4/projects/29882/packages/maven</url>
+            <url>
+                https://gitlab.inria.fr/api/v4/projects/29882/packages/maven
+            </url>
         </repository>
         <snapshotRepository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.inria.fr/api/v4/projects/29882/packages/maven</url>
+            <url>
+                https://gitlab.inria.fr/api/v4/projects/29882/packages/maven
+            </url>
         </snapshotRepository>
     </distributionManagement>
 
     <scm>
         <url>https://gitlab.inria.fr/stopcovid19/analytics-server</url>
     </scm>
-
 </project>
