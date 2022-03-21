@@ -72,7 +72,7 @@ services:
     networks:
       - network_analytics
   kafdrop:
-    image: obsidiandynamics/kafdrop:3.27.0
+    image: obsidiandynamics/kafdrop:3.29.0
     ports:
       - "9000:9000"
     environment:
