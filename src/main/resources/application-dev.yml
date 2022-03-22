@@ -4,8 +4,6 @@ server:
     include-message: always
     include-stacktrace: always
 
-# Available endpoints for the monitoring
-
 spring:
   output:
     ansi:

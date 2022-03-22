@@ -6,35 +6,39 @@ import fr.gouv.tac.analytics.test.KafkaRecordAssert.Companion.assertThat
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.hamcrest.Matchers
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.nio.charset.StandardCharsets
 
 class KafkaRecordAssertTest {
-    private var exampleConsumerRecord: ConsumerRecord<String, JsonNode>? = null
+    private val exampleConsumerRecord: ConsumerRecord<String, JsonNode>
 
-    @BeforeEach
-    fun setup() {
-        val jsonValue = ObjectMapper().readTree("{\"name\": \"Robert\"}")
+    init {
+        val jsonValue = ObjectMapper().readTree(
+            """
+            {
+              "name": "Robert"
+            }
+            """.trimIndent()
+        )
         exampleConsumerRecord = ConsumerRecord("topic-name", 0, 0, "key", jsonValue)
-        exampleConsumerRecord!!.headers().add("TestHeader", "HeaderValue".toByteArray(StandardCharsets.UTF_8))
+        exampleConsumerRecord.headers().add("TestHeader", "HeaderValue".toByteArray(StandardCharsets.UTF_8))
     }
 
     @Test
     fun can_detect_hasNoKey_mismatch() {
-        assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoKey() } }
+        assertThatThrownBy { assertThat(exampleConsumerRecord).hasNoKey() }
             .hasMessageFindingMatch(
                 """
                         \[Kafka record shouldn't have a key\] .*
                         expected: null.*
-                        but was : "key".*
+                         but was: "key".*
                 """.trimIndent()
             )
     }
 
     @Test
     fun can_detect_hasNoHeader_mismatch() {
-        assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasNoHeader("TestHeader") } }
+        assertThatThrownBy { assertThat(exampleConsumerRecord).hasNoHeader("TestHeader") }
             .hasMessageFindingMatch(
                 """
                         \[Kafka record shouldn't have a 'TestHeader' header\] .*
@@ -45,10 +49,10 @@ class KafkaRecordAssertTest {
 
     @Test
     fun can_detect_hasJsonValue_mismatch() {
-        assertThatThrownBy { exampleConsumerRecord?.let { assertThat(it).hasJsonValue("name", "clea") } }
+        assertThatThrownBy { assertThat(exampleConsumerRecord).hasJsonValue("name", "clea") }
             .hasMessageFindingMatch(
                 """
-             Expecting:.*
+             Expecting actual:.*
                "Robert".*
              to satisfy:.*
                "clea"
@@ -67,7 +71,7 @@ class KafkaRecordAssertTest {
             }
         }.hasMessageFindingMatch(
             """
-             Expecting:.*
+             Expecting actual:.*
                "Robert".*
              to satisfy:.*
                "clea"
