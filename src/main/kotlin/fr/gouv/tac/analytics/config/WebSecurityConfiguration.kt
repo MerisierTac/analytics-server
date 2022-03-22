@@ -30,7 +30,7 @@ class WebSecurityConfiguration(val analyticsProperties: AnalyticsProperties) : W
         http.authorizeRequests()
             .requestMatchers(EndpointRequest.toAnyEndpoint())
             .permitAll()
-            .antMatchers("/status").permitAll()
+            .antMatchers("/status.txt").permitAll()
             .anyRequest().authenticated()
     }
 
