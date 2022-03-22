@@ -1,3 +1,8 @@
 spring:
-  kafka:
-    bootstrap-servers: ${ANALYTICS_KAFKA_BOOTSTRAP_SERVERS}
+  application:
+    name: analytics
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
