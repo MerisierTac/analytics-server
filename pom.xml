@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <kotlin.version>1.6.10</kotlin.version>
+        <kotlin.version>1.6.20</kotlin.version>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
         <spring-kafka.version>2.6.6</spring-kafka.version>
         <restassured.version>4.2.0</restassured.version>
