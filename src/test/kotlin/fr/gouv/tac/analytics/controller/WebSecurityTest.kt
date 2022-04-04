@@ -5,10 +5,12 @@ import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.defaultJwtClaims
 import fr.gouv.tac.analytics.test.RestAssuredManager.Companion.givenJwt
 import io.restassured.RestAssured.given
 import io.restassured.http.ContentType.JSON
+import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.HttpHeaders.WWW_AUTHENTICATE
+import org.springframework.http.HttpStatus.OK
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import java.sql.Date
 import java.time.Instant
@@ -60,6 +62,15 @@ class WebSecurityTest {
             .then()
             .statusCode(UNAUTHORIZED.value())
             .header(WWW_AUTHENTICATE, startsWith("Bearer error=\"invalid_token\", error_description=\"An error occurred while attempting to decode the Jwt: Signed JWT rejected: Invalid signature\","))
+    }
+
+    @Test
+    fun status_file_is_publicly_accessible() {
+        given()
+            .get("/status.txt")
+            .then()
+            .statusCode(OK.value())
+            .body(equalTo("up\n"))
     }
 
     @Test
