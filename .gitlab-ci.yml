@@ -9,7 +9,7 @@ deploy-int:
     APP_VERSION: develop-SNAPSHOT
   trigger:
     project: stemcovid19/infrastructure/functional-zone/services/analytics/analytics-ansible
-    branch: dev
+    branch: master
     strategy: depend
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop"'

@@ -4,15 +4,6 @@ server:
     include-message: always
     include-stacktrace: always
 
-# Available endpoints for the monitoring
-management:
-  server:
-    port: 8090
-  endpoints:
-    web:
-      exposure:
-        include: health,metrics,info,prometheus
-
 spring:
   output:
     ansi:
@@ -23,7 +14,6 @@ analytics:
   robert-jwt-analytics-public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMAMa2bW7k1SQrY+MtGbGvbeBj+4JB5hzCHXe+Amzc/yLUlAabO12uUwlBUD0JetGqNSgJKRlyDLmeyChXI3P88CAwEAAQ==
   creation-topic: dev.analytics.cmd.create
   deletion-topic: dev.analytics.cmd.delete
-
 # jwt private key generated with : https://travistidwell.com/jsencrypt/demo/
 #-----BEGIN RSA PRIVATE KEY-----
 #MIIBOwIBAAJBAMAMa2bW7k1SQrY+MtGbGvbeBj+4JB5hzCHXe+Amzc/yLUlAabO1

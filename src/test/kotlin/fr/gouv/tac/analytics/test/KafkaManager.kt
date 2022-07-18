@@ -6,8 +6,8 @@ import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.kafka.connect.json.JsonDeserializer
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.support.serializer.JsonDeserializer
 import org.springframework.kafka.test.utils.KafkaTestUtils
 import org.springframework.test.context.TestContext
 import org.springframework.test.context.TestExecutionListener
@@ -53,7 +53,7 @@ class KafkaManager : TestExecutionListener {
             analyticsProperties.deletionTopic
         )
         val config = KafkaTestUtils.consumerProps(KAFKA.bootstrapServers, "test-consumer", "false")
-        consumer = DefaultKafkaConsumerFactory(config, StringDeserializer(), JsonDeserializer())
+        consumer = DefaultKafkaConsumerFactory(config, StringDeserializer(), JsonDeserializer(JsonNode::class.java))
             .createConsumer()
         consumer!!.subscribe(topics)
     }

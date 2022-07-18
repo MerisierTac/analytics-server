@@ -1,7 +1,7 @@
 # This docker compose file allow to deploy all  mandatory components that are not easy to launch from your IDE of your
 # development laptop.
 
-version: '3.5'
+version: "3.5"
 services:
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
@@ -72,7 +72,7 @@ services:
     networks:
       - network_analytics
   kafdrop:
-    image: obsidiandynamics/kafdrop:3.27.0
+    image: obsidiandynamics/kafdrop:3.30.0
     ports:
       - "9000:9000"
     environment:

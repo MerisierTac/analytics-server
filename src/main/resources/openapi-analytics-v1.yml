@@ -11,15 +11,15 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 
-tags: [ ]
+tags: []
 
 security:
-  - bearerAuth: [ ]
+  - bearerAuth: []
 
 paths:
   /analytics:
     post:
-      tags: [ "analytics" ]
+      tags: ["analytics"]
       summary: Create analytics
       description: Request the creation of analytics.
       operationId: createAnalytics
@@ -47,15 +47,15 @@ paths:
         200:
           description: successful operation
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: "#/components/responses/BadRequest"
         401:
-          $ref: '#/components/responses/Unauthorized'
+          $ref: "#/components/responses/Unauthorized"
         403:
-          $ref: '#/components/responses/Forbidden'
+          $ref: "#/components/responses/Forbidden"
         500:
           $ref: "#/components/responses/InternalServerError"
     delete:
-      tags: [ "analytics" ]
+      tags: ["analytics"]
       summary: Delete analytics
       description: Request the deletion of analytics based on the application uuid supplied.
       operationId: deleteAnalytics
@@ -72,11 +72,11 @@ paths:
         204:
           description: No content, successful operation
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: "#/components/responses/BadRequest"
         401:
-          $ref: '#/components/responses/Unauthorized'
+          $ref: "#/components/responses/Unauthorized"
         403:
-          $ref: '#/components/responses/Forbidden'
+          $ref: "#/components/responses/Forbidden"
         500:
           $ref: "#/components/responses/InternalServerError"
 
@@ -145,14 +145,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TimestampedEvent"
-          description:
-            The events list of the analytics.
+          description: The events list of the analytics.
         errors:
           type: array
           items:
             $ref: "#/components/schemas/TimestampedEvent"
-          description:
-            The errors list of the analytics.
+          description: The errors list of the analytics.
       required:
         - installationUuid
 

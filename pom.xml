@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
-        <relativePath/>
+        <version>2.5.12</version>
+        <relativePath />
     </parent>
 
     <groupId>fr.gouv.tac</groupId>
@@ -18,13 +20,11 @@
 
     <properties>
         <java.version>11</java.version>
-        <kotlin.version>1.6.10</kotlin.version>
+        <kotlin.version>1.6.21</kotlin.version>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
-        <spring-kafka.version>2.6.6</spring-kafka.version>
-        <restassured.version>4.2.0</restassured.version>
+        <spring-kafka.version>2.7.6</spring-kafka.version>
         <hamcrest-date.version>2.0.8</hamcrest-date.version>
-        <testcontainers.version>1.16.2</testcontainers.version>
-        <log4j2.version>2.17.0</log4j2.version>
+        <testcontainers.version>1.17.2</testcontainers.version>
     </properties>
 
     <dependencyManagement>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.1</version>
+            <version>0.2.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -148,12 +148,14 @@
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <testSourceDirectory>
+            ${project.basedir}/src/test/kotlin
+        </testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>5.3.1</version>
+                <version>5.4.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -165,13 +167,17 @@
                             </inputSpec>
                             <generatorName>kotlin-spring</generatorName>
                             <apiPackage>fr.gouv.tac.analytics.api</apiPackage>
-                            <modelPackage>fr.gouv.tac.analytics.api.model</modelPackage>
+                            <modelPackage>
+                                fr.gouv.tac.analytics.api.model
+                            </modelPackage>
                             <configOptions>
                                 <sourceFolder>src/main/kotlin</sourceFolder>
                                 <interfaceOnly>true</interfaceOnly>
                                 <gradleBuildFile>false</gradleBuildFile>
                                 <useTags>true</useTags>
-                                <serializationLibrary>jackson</serializationLibrary>
+                                <serializationLibrary>
+                                    jackson
+                                </serializationLibrary>
                                 <exceptionHandler>false</exceptionHandler>
                             </configOptions>
                         </configuration>
@@ -181,7 +187,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.18.0</version>
+                <version>2.22.5</version>
                 <configuration>
                     <kotlin>
                         <!-- default config for now, as spotless does not support custom ktlin config yet -> see https://github.com/diffplug/spotless/issues/142-->
@@ -200,8 +206,19 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -225,7 +242,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <goals>
@@ -237,7 +254,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>6.5.2</version>
+                <version>7.1.0</version>
             </plugin>
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
@@ -250,16 +267,19 @@
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.inria.fr/api/v4/projects/29882/packages/maven</url>
+            <url>
+                https://gitlab.inria.fr/api/v4/projects/29882/packages/maven
+            </url>
         </repository>
         <snapshotRepository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.inria.fr/api/v4/projects/29882/packages/maven</url>
+            <url>
+                https://gitlab.inria.fr/api/v4/projects/29882/packages/maven
+            </url>
         </snapshotRepository>
     </distributionManagement>
 
     <scm>
         <url>https://gitlab.inria.fr/stopcovid19/analytics-server</url>
     </scm>
-
 </project>
