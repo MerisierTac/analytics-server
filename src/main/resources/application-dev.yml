@@ -4,15 +4,6 @@ server:
     include-message: always
     include-stacktrace: always
 
-# Available endpoints for the monitoring
-management:
-  server:
-    port: 8090
-  endpoints:
-    web:
-      exposure:
-        include: health,metrics,info,prometheus
-
 spring:
   output:
     ansi:
